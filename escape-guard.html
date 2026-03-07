@@ -1,0 +1,3979 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Мета-теги для полного экрана на мобильных -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>побег от клоуна охранника🎪 - 3D</title>
+     <link rel="icon" type="image/x-icon" href="logoza.ru.png">
+    <style>
+        /* Все стили остаются без изменений */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            background: #000;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+        }
+        
+        #gameContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #000;
+        }
+        
+        .ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: clamp(28px, 8vw, 48px);
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            color: #FFD700;
+        }
+        
+        h2 {
+            font-size: clamp(20px, 6vw, 36px);
+            margin-bottom: 20px;
+            color: #FF6347;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #FFD700;
+            color: #1a2a6c;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            min-height: 50px;
+        }
+        
+        button:hover, button:active {
+            background: #FFA500;
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            max-width: 90%;
+            line-height: 1.4;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .key {
+            display: inline-block;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            font-weight: bold;
+            min-width: 35px;
+            text-align: center;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            z-index: 30;
+            text-align: center;
+        }
+        
+        .speed-display {
+            margin-top: 3px;
+            font-size: 14px;
+            color: #FFD700;
+        }
+        
+        .exit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.7);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .exit-btn:hover, .exit-btn:active {
+            background: rgba(220, 53, 69, 0.9);
+            transform: scale(1.05);
+        }
+        
+        /* Сенсорное управление - только для мобильных */
+        .touch-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 15;
+            pointer-events: none;
+        }
+        
+        .touch-buttons {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+        
+        .touch-button {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.1s;
+            touch-action: manipulation;
+        }
+        
+        .touch-button:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+        
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            pointer-events: auto;
+        }
+        
+        .dpad-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.1s;
+            touch-action: manipulation;
+        }
+        
+        .dpad-button:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+        
+        .dpad-button.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        
+        .dpad-button.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        .dpad-button.center {
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 18px;
+        }
+        
+        .dpad-button.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        
+        .dpad-button.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        
+        /* КНОВКА УПРАВЛЕНИЯ ДЛЯ КОМПЬЮТЕРА */
+        .pc-controls-btn {
+            position: absolute;
+            top: 10px;
+            left: 270px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        
+        .pc-controls-btn:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .pc-controls-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Модальное окно с управлением для ПК */
+        .pc-controls-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pc-controls-modal.hidden {
+            display: none;
+        }
+        
+        .pc-controls-content {
+            background: rgba(30, 30, 40, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            border: 3px solid #3498db;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .control-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            border-left: 4px solid #3498db;
+        }
+        
+        .control-key {
+            display: inline-block;
+            background: rgba(52, 152, 219, 0.3);
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+            border: 1px solid #3498db;
+        }
+        
+        /* Кнопка включения/выключения звука */
+        .sound-btn {
+            position: absolute;
+            top: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid #4ECDC4;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        
+        .sound-btn:hover {
+            background: rgba(78, 205, 196, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .sound-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .sound-btn.muted {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+        }
+        
+        /* Кнопка полного экрана - ДОБАВЛЕНА */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid #FFD700;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        
+        .fullscreen-btn:hover, .fullscreen-btn:active {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .fullscreen-btn.active {
+            border-color: #4ECDC4;
+            color: #4ECDC4;
+        }
+        
+        .mobile-instructions {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+        }
+        
+        .mobile-instructions p {
+            margin: 5px 0;
+        }
+        
+        /* МОБИЛЬНАЯ ВЕРСИЯ - исправлено определение телефона */
+        @media (max-width: 768px), (pointer: coarse) and (hover: none) {
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+            
+            body {
+                height: 100vh;
+                /* Для iOS Safari */
+                height: -webkit-fill-available;
+            }
+            
+            #gameContainer {
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+            
+            .ui {
+                font-size: 14px;
+                padding: 6px 10px;
+                top: 5px;
+                left: 5px;
+            }
+            
+            /* Расположение кнопок на мобильных - исправлено */
+            .sound-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                top: 5px;
+                right: 110px; /* Сдвинута правее */
+                left: auto;
+            }
+            
+            .fullscreen-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                top: 5px;
+                right: 60px; /* Позиция между звуком и выходом */
+                left: auto;
+            }
+            
+            .exit-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                top: 5px;
+                right: 5px;
+            }
+            
+            .pc-controls-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+                top: 5px;
+                left: 50px;
+                /* На мобильных скрываем кнопку управления ПК */
+                display: none !important;
+            }
+            
+            .touch-button {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .dpad-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            button {
+                padding: 12px 24px;
+                font-size: 16px;
+                min-height: 45px;
+            }
+            
+            /* Показываем сенсорное управление на мобильных */
+            .touch-controls {
+                display: flex;
+                bottom: 15px;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Уменьшаем отступы для лучшего использования экрана */
+            .screen {
+                padding: 15px;
+            }
+            
+            h1 {
+                margin-bottom: 10px;
+            }
+            
+            h2 {
+                margin-bottom: 15px;
+            }
+            
+            .instructions {
+                margin-top: 10px;
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+        
+        /* ДЕСКТОПНАЯ ВЕРСИЯ */
+        @media (min-width: 769px) and (pointer: fine) {
+            /* Показываем кнопку управления на ПК */
+            .pc-controls-btn {
+                display: flex;
+                left: 265px; /* Сдвигаем левее для ПК */
+            }
+            
+            .sound-btn {
+                left: 200px; /* Позиция для ПК */
+                right: auto;
+            }
+            
+            .fullscreen-btn {
+                left: 330px; /* Позиция для ПК */
+                right: auto;
+                top: 10px;
+            }
+            
+            /* Скрываем сенсорное управление на ПК */
+            .touch-controls {
+                display: none;
+            }
+            
+            /* Скрываем кнопку полного экрана на ПК если не поддерживается */
+            .fullscreen-btn {
+                display: flex;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ui {
+                font-size: 12px;
+                padding: 5px 8px;
+                top: 3px;
+                left: 3px;
+            }
+            
+            .sound-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+                top: 3px;
+                right: 95px; /* Сдвинута еще правее */
+                left: auto;
+            }
+            
+            .fullscreen-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+                top: 3px;
+                right: 50px; /* Сдвинута правее */
+                left: auto;
+            }
+            
+            .exit-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+                top: 3px;
+                right: 3px;
+            }
+            
+            .touch-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .dpad-button {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .touch-controls {
+                padding: 0 10px;
+                bottom: 10px;
+            }
+            
+            .touch-buttons {
+                gap: 10px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+                min-height: 40px;
+            }
+            
+            .instructions {
+                font-size: 11px;
+                padding: 8px;
+            }
+            
+            /* Еще более компактные стили для очень маленьких экранов */
+            .ui > div {
+                margin-bottom: 1px;
+            }
+            
+            .speed-display, .season-display, .time-display {
+                font-size: 11px;
+            }
+        }
+        
+        /* Для очень высоких экранов (современные смартфоны) */
+        @media (max-height: 700px) and (max-width: 768px) {
+            .touch-controls {
+                bottom: 5px;
+            }
+            
+            .ui {
+                top: 2px;
+                left: 2px;
+                padding: 4px 6px;
+            }
+            
+            .sound-btn, .fullscreen-btn, .exit-btn {
+                top: 2px;
+            }
+            
+            .sound-btn {
+                right: 85px;
+            }
+            
+            .fullscreen-btn {
+                right: 45px;
+            }
+            
+            .exit-btn {
+                right: 2px;
+            }
+        }
+        
+        /* Для телефонов в горизонтальном положении */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .ui {
+                font-size: 11px;
+                padding: 4px 6px;
+                top: 2px;
+                left: 2px;
+            }
+            
+            .sound-btn, .fullscreen-btn, .exit-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+                top: 2px;
+            }
+            
+            .sound-btn {
+                right: 70px;
+            }
+            
+            .fullscreen-btn {
+                right: 35px;
+            }
+            
+            .exit-btn {
+                right: 2px;
+            }
+            
+            .touch-button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .dpad-button {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            .touch-controls {
+                bottom: 5px;
+                padding: 0 10px;
+            }
+        }
+        
+        .orientation-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .orientation-warning.active {
+            display: flex;
+        }
+        
+        .orientation-warning h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+        
+        .orientation-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: rotate 2s infinite ease-in-out;
+        }
+        
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+        
+        .season-display {
+            margin-top: 3px;
+            font-size: 14px;
+            color: #4ECDC4;
+        }
+        
+        .time-display {
+            margin-top: 3px;
+            font-size: 14px;
+            color: #FFA500;
+        }
+        
+        #pauseScreen {
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 25;
+        }
+        
+        .pause-title {
+            color: #FFD700;
+            font-size: clamp(24px, 6vw, 40px);
+            margin-bottom: 20px;
+        }
+        
+        .pause-instructions {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Индикатор звука в UI */
+        .sound-indicator {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #4ECDC4;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            opacity: 0.8;
+        }
+        
+        .sound-indicator.hidden {
+            display: none;
+        }
+        
+        .sound-indicator.muted {
+            color: #FF6B6B;
+        }
+        
+        /* Индикатор фонарика в UI */
+        .flashlight-indicator {
+            position: absolute;
+            top: 110px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #FFA500;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .flashlight-indicator.hidden {
+            display: none;
+        }
+        
+        .flashlight-icon {
+            font-size: 14px;
+        }
+        
+        /* Стили для fullscreen режима */
+        :fullscreen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        :-webkit-full-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        :-moz-full-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        /* Скрываем стандартные элементы в fullscreen */
+        :fullscreen .ui,
+        :-webkit-full-screen .ui,
+        :-moz-full-screen .ui {
+            top: 10px;
+            left: env(safe-area-inset-left, 10px);
+        }
+        
+        :fullscreen .sound-btn,
+        :-webkit-full-screen .sound-btn,
+        :-moz-full-screen .sound-btn {
+            top: 10p;
+            right: calc(110px + env(safe-area-inset-right, 0px));
+        }
+        
+        :fullscreen .fullscreen-btn,
+        :-webkit-full-screen .fullscreen-btn,
+        :-moz-full-screen .fullscreen-btn {
+            top: 10px;
+            right: calc(60px + env(safe-area-inset-right, 0px));
+        }
+        
+        :fullscreen .exit-btn,
+        :-webkit-full-screen .exit-btn,
+        :-moz-full-screen .exit-btn {
+            top: 10px;
+            right: calc(10px + env(safe-area-inset-right, 0px));
+        }
+        
+        :fullscreen .touch-controls,
+        :-webkit-full-screen .touch-controls,
+        :-moz-full-screen .touch-controls {
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            padding: 0 calc(20px + env(safe-area-inset-left, 0px)) 0 calc(20px + env(safe-area-inset-right, 0px));
+        }
+    </style>
+</head>
+<body>
+    <div class="orientation-warning" id="orientationWarning">
+        <div>
+            <div class="orientation-icon">🔄</div>
+            <h2>Пожалуйста, поверните устройство</h2>
+            <p>Для лучшего игрового опыта поверните телефон в альбомный режим</p>
+        </div>
+    </div>
+    
+    <!-- Модальное окно управления для ПК -->
+    <div class="pc-controls-modal hidden" id="pcControlsModal">
+        <div class="pc-controls-content">
+            <h1>Управление на клавиатуре</h1>
+            <p>Используйте клавиши для перемещения и выполнения действий</p>
+            
+            <div class="controls-grid">
+                <div class="control-item">
+                    <div class="control-key">A</div>
+                    <span>Движение влево</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">D</div>
+                    <span>Движение вправо</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">W</div>
+                    <span>Прыжок</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">S</div>
+                    <span>Прыжок (альтернативная)</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">ПРОБЕЛ</div>
+                    <span>Прыжок (основная)</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">0</div>
+                    <span>Пауза игры</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">ESC</div>
+                    <span>Выход в меню</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">M</div>
+                    <span>Включить/выключить звук</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">F</div>
+                    <span>Включить/выключить фонарик (только ночью)</span>
+                </div>
+                <div class="control-item">
+                    <div class="control-key">F11</div>
+                    <span>Полноэкранный режим</span>
+                </div>
+            </div>
+            
+            <button id="closeControlsBtn">ПОНЯТНО, ЗАКРЫТЬ</button>
+            
+            <div class="instructions" style="margin-top: 20px;">
+                <p><strong>Совет:</strong> На мобильных устройствах используйте сенсорные кнопки управления внизу экрана</p>
+                <p><strong>Звук:</strong> Нажмите 🔊 чтобы включить/выключить звуковые эффекты</p>
+                <p><strong>Полный экран:</strong> Нажмите ⛶ для перехода в полноэкранный режим</p>
+                <p><strong>Фонарик:</strong> Автоматически включается ночью и выключается на клавишу F</p>
+                <p><strong>Погода:</strong> Погода и время суток меняются автоматически каждые 30 секунд</p>
+                <p><strong>Апрельское обновление:</strong> Препятствия стали цирковыми, а на фоне появились настоящие цирки! 🎪</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="ui">
+            <div id="score">Очки: 0</div>
+            <div id="distance">Дистанция: 0м</div>
+            <div id="speed" class="speed-display">Скорость: 1x</div>
+            <div id="season" class="season-display">Сезон: Лето</div>
+            <div id="timeOfDay" class="time-display">Время: День</div>
+        </div>
+        
+        <!-- Индикатор звука -->
+        <div id="soundIndicator" class="sound-indicator hidden">
+            Звук: ВКЛ
+        </div>
+        
+        <!-- Индикатор фонарика -->
+        <div id="flashlightIndicator" class="flashlight-indicator hidden">
+            <span class="flashlight-icon">🔦💜</span>
+            <span id="flashlightText">Фонарик: ВКЛ</span>
+        </div>
+        
+        <!-- Кнопка звука -->
+        <button class="sound-btn" id="soundBtn">🔊</button>
+        
+        <!-- Кнопка полного экрана - ДОБАВЛЕНА -->
+        <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
+        
+        <!-- КНОВКА УПРАВЛЕНИЯ ДЛЯ КОМПЬЮТЕРА -->
+        <button class="pc-controls-btn" id="pcControlsBtn">🎮</button>
+        
+        <div id="startScreen" class="screen">
+            <h1>побег от клоуна охранника🎪</h1>
+            <button id="startButton">ИГРАТЬ</button>
+            <div class="instructions">
+                <p>Убегайте от охранника в 3D-мире! Перепрыгивайте препятствия и собирайте монеты.</p>
+                <p>Чем дальше вы бежите, тем быстрее становитесь!</p>
+                <p>Нажмите кнопку 🔊 чтобы включить/выключить звук</p>
+                <p><strong>Фонарик:</strong> Автоматически включается ночью и светит, чтобы включить фонарик клавиша F</p>
+                <p><strong>Пауза:</strong> Нажмите 0 для паузы</p>
+                <div class="mobile-instructions">
+                    <p><strong>Управление на ПК:</strong></p>
+                    <p>Нажмите кнопку 🎮 для просмотра управления клавиатурой</p>
+                    <p><strong>Управление на телефоне:</strong></p>
+                    <p>← → - Движение влево/вправо</p>
+                    <p>↑ - Прыжок (2.5м)</p>
+                    <p>Или используйте сенсорные кнопки</p>
+                    <p><strong>Для полного экрана:</strong> Нажмите кнопку ⛶ в правом верхнем углу</p>
+                </div>
+                <p>Погода и время суток меняются автоматически каждые 30 секунд!</p>
+                <p>Избегайте препятствий и охранника! При столкновении игра заканчивается.</p>
+                <p>🎉 Новые цирковые препятствия: клоунские ботинки, торт, фокусник и шары!</p>
+            </div>
+        </div>
+        
+        <div id="pauseScreen" class="screen hidden">
+            <h2 class="pause-title">ИГРА НА ПАУЗЕ</h2>
+            <p>Нажмите 0 или кнопку ниже, чтобы продолжить</p>
+            <button id="resumeButton">ПРОДОЛЖИТЬ</button>
+            <div class="pause-instructions">
+                <p>Очки: <span id="pauseScore">0</span></p>
+                <p>Дистанция: <span id="pauseDistance">0м</span></p>
+                <p>Скорость: <span id="pauseSpeed">1x</span></p>
+                <p>Время суток: <span id="pauseTime">День</span></p>
+                <p>Сезон: <span id="pauseSeason">Лето</span></p>
+                <p>Звук: <span id="pauseSound">ВКЛ</span></p>
+                <p>Фонарик: <span id="pauseFlashlight">ВЫКЛ</span></p>
+            </div>
+        </div>
+        
+        <div id="gameOverScreen" class="screen hidden">
+            <h2>Клоун поймал вас!</h2>
+            <p id="finalScore">Ваш счет: 0</p>
+            <p id="finalDistance">Дистанция: 0м</p>
+            <p id="maxSpeed">Максимальная скорость: 1x</p>
+            <p id="finalSeason">Сезон: Лето</p>
+            <p id="finalTime">Время суток: День</p>
+            <button id="restartButton">ИГРАТЬ СНОВА</button>
+        </div>
+        
+        <button class="exit-btn" id="exitBtn">✕</button>
+        
+        <!-- Сенсорное управление (только для мобильных) -->
+        <div class="touch-controls">
+            <div class="dpad">
+                <div class="dpad-button up" id="touchUp">↑</div>
+                <div class="dpad-button left" id="touchLeft">←</div>
+                <div class="dpad-button center">О</div>
+                <div class="dpad-button right" id="touchRight">→</div>
+                <div class="dpad-button down" id="touchDown">↓</div>
+            </div>
+            
+            <div class="touch-buttons">
+                <div class="touch-button" id="touchJump">↑</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loading">Загрузка 3D-графики и звуков...</div>
+
+    <!-- Three.js библиотека -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // Получаем элементы
+        const canvas = document.getElementById('gameCanvas');
+        const startScreen = document.getElementById('startScreen');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startButton = document.getElementById('startButton');
+        const resumeButton = document.getElementById('resumeButton');
+        const restartButton = document.getElementById('restartButton');
+        const scoreElement = document.getElementById('score');
+        const distanceElement = document.getElementById('distance');
+        const speedElement = document.getElementById('speed');
+        const seasonElement = document.getElementById('season');
+        const timeOfDayElement = document.getElementById('timeOfDay');
+        const finalScoreElement = document.getElementById('finalScore');
+        const finalDistanceElement = document.getElementById('finalDistance');
+        const maxSpeedElement = document.getElementById('maxSpeed');
+        const finalTimeElement = document.getElementById('finalTime');
+        const finalSeasonElement = document.getElementById('finalSeason');
+        const pauseScoreElement = document.getElementById('pauseScore');
+        const pauseDistanceElement = document.getElementById('pauseDistance');
+        const pauseSpeedElement = document.getElementById('pauseSpeed');
+        const pauseTimeElement = document.getElementById('pauseTime');
+        const pauseSeasonElement = document.getElementById('pauseSeason');
+        const pauseFlashlightElement = document.getElementById('pauseFlashlight');
+        const loadingElement = document.getElementById('loading');
+        const exitBtn = document.getElementById('exitBtn');
+        const orientationWarning = document.getElementById('orientationWarning');
+        
+        // Новые элементы для управления звуком
+        const soundBtn = document.getElementById('soundBtn');
+        const soundIndicator = document.getElementById('soundIndicator');
+        
+        // Элементы для фонарика
+        const flashlightIndicator = document.getElementById('flashlightIndicator');
+        const flashlightText = document.getElementById('flashlightText');
+        
+        // Новые элементы для управления ПК
+        const pcControlsBtn = document.getElementById('pcControlsBtn');
+        const pcControlsModal = document.getElementById('pcControlsModal');
+        const closeControlsBtn = document.getElementById('closeControlsBtn');
+        
+        // Новая кнопка полного экрана
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        // Сенсорные элементы управления
+        const touchUp = document.getElementById('touchUp');
+        const touchLeft = document.getElementById('touchLeft');
+        const touchRight = document.getElementById('touchRight');
+        const touchDown = document.getElementById('touchDown');
+        const touchJump = document.getElementById('touchJump');
+
+        // Игровые переменные
+        let gameRunning = false;
+        let gamePaused = false;
+        let score = 0;
+        let distance = 0;
+        let baseSpeed = 0.3;
+        let currentSpeed = baseSpeed;
+        let speedMultiplier = 1;
+        let maxSpeed = currentSpeed;
+        let playerLane = 1;
+        let isJumping = false;
+        let jumpStartTime = 0;
+        let lastObstacleTime = 0;
+        let obstacleInterval = 1800;
+        let lastCoinTime = 0;
+        let coinInterval = 900;
+        let lastSpeedIncreaseTime = 0;
+        let isWinter = false;
+        let isNight = false;
+        let flashlightEnabled = true; // Фонарик включен по умолчанию
+        let seasonTransitionTime = 0;
+        let timeTransitionTime = 0;
+        let lastWeatherChange = 0;
+        const weatherChangeInterval = 30000; // 30 секунд
+        
+        // Звуковые переменные
+        let soundEnabled = true;
+        let audioContext;
+        let soundsLoaded = false;
+
+        // Three.js переменные
+        let scene, camera, renderer;
+        let player, guard;
+        let obstacles = [];
+        let coins = [];
+        let lanes = [-4, 0, 4];
+        let keys = {};
+        let animationId;
+        let playerTargetX = 0;
+        let playerY = 1;
+        let playerOriginalHeight = 1.8;
+        let jumpHeight = 2.5;
+        let environmentObjects = [];
+        let roadLines = [];
+        let road, leftGrass, rightGrass;
+        let snowParticles = [];
+        let stars = [];
+        let fog;
+        let directionalLight, ambientLight;
+        let flashlight; // Добавляем переменную для фонарика
+        let flashlightLight; // Свет фонарика
+        
+        // Мобильные переменные
+        let touchControls = {
+            left: false,
+            right: false,
+            up: false,
+            jump: false
+        };
+        
+        // Определение типа устройства - ИСПРАВЛЕНА ФУНКЦИЯ
+        let isMobileDevice = false;
+        
+        function detectDeviceType() {
+            // Более точное определение мобильного устройства
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // Проверка на сенсорное устройство
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+            
+            // Проверка user agent
+            const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            
+            // Проверка размера экрана и соотношения сторон
+            const isSmallScreen = window.innerWidth <= 768;
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            // Комбинированная проверка
+            isMobileDevice = (hasTouch && isMobileUA) || (hasTouch && isSmallScreen);
+            
+            console.log("Определение устройства:");
+            console.log("User Agent:", userAgent);
+            console.log("Has touch:", hasTouch);
+            console.log("Mobile UA:", isMobileUA);
+            console.log("Small screen:", isSmallScreen);
+            console.log("Is mobile:", isMobileDevice);
+            
+            return isMobileDevice;
+        }
+
+        // Функция для активации полноэкранного режима
+        function toggleFullscreen() {
+            const elem = document.documentElement;
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                // Входим в полноэкранный режим
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log("Ошибка при входе в полноэкранный режим:", err);
+                    });
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                
+                // Обновляем внешний вид кнопки
+                fullscreenBtn.textContent = '🗗';
+                fullscreenBtn.classList.add('active');
+            } else {
+                // Выходим из полноэкранного режима
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                // Обновляем внешний вид кнопки
+                fullscreenBtn.textContent = '⛶';
+                fullscreenBtn.classList.remove('active');
+            }
+        }
+        
+        // Проверка поддержки полноэкранного режима
+        function isFullscreenSupported() {
+            return document.fullscreenEnabled || 
+                   document.webkitFullscreenEnabled || 
+                   document.mozFullScreenEnabled ||
+                   document.msFullscreenEnabled;
+        }
+
+        // Создание звуковых эффектов с помощью Web Audio API
+        function createSoundEffects() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log("Аудио контекст создан");
+            } catch (error) {
+                console.log("Аудио контекст не доступен, звук отключен:", error);
+                soundEnabled = false;
+                soundBtn.classList.add('muted');
+                soundBtn.textContent = '🔇';
+                return;
+            }
+        }
+
+        // Функция для создания звука с настраиваемыми параметрами
+        function createSound(frequency, duration, type = 'sine', volume = 0.5, envelope = null) {
+            if (!audioContext || !soundEnabled) return null;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+            
+            if (envelope) {
+                const now = audioContext.currentTime;
+                gainNode.gain.setValueAtTime(envelope.attack === 0 ? volume : 0.001, now);
+                if (envelope.attack > 0) {
+                    gainNode.gain.exponentialRampToValueAtTime(volume, now + envelope.attack);
+                }
+                if (envelope.decay > 0) {
+                    gainNode.gain.exponentialRampToValueAtTime(envelope.sustain * volume, now + envelope.attack + envelope.decay);
+                }
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            } else {
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+            }
+            
+            return { oscillator, gainNode, duration };
+        }
+
+        // Воспроизведение звука
+        function playSound(soundConfig) {
+            if (!soundEnabled || !audioContext) return;
+            
+            try {
+                // Если аудио контекст приостановлен (например, в мобильных браузерах), пробуем возобновить
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                const { oscillator, gainNode, duration } = soundConfig;
+                
+                // Клонируем звуковой конфиг для независимого воспроизведения
+                const newOscillator = audioContext.createOscillator();
+                const newGainNode = audioContext.createGain();
+                
+                newOscillator.connect(newGainNode);
+                newGainNode.connect(audioContext.destination);
+                
+                newOscillator.type = oscillator.type;
+                newOscillator.frequency.value = oscillator.frequency.value;
+                
+                // Копируем параметры усиления
+                const now = audioContext.currentTime;
+                newGainNode.gain.value = gainNode.gain.value;
+                
+                // Применяем envelope или стандартное затухание
+                newGainNode.gain.setValueAtTime(gainNode.gain.value, now);
+                newGainNode.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                
+                newOscillator.start(now);
+                newOscillator.stop(now + duration);
+                
+                return true;
+            } catch (e) {
+                console.log("Ошибка воспроизведения звука:", e);
+                return false;
+            }
+        }
+
+        // Специфичные звуковые эффекты для игры
+        function playJumpSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Прыжок - два тона: низкий для начала, высокий для кульминации
+            const now = audioContext.currentTime;
+            
+            // Первый тон (низкий)
+            const oscillator1 = audioContext.createOscillator();
+            const gainNode1 = audioContext.createGain();
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+            
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(300, now);
+            oscillator1.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+            
+            gainNode1.gain.setValueAtTime(0.3, now);
+            gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            
+            // Второй тон (высокий)
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.type = 'sine';
+            oscillator2.frequency.setValueAtTime(1000, now + 0.1);
+            oscillator2.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+            
+            gainNode2.gain.setValueAtTime(0.2, now + 0.1);
+            gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            
+            oscillator1.start(now);
+            oscillator1.stop(now + 0.3);
+            
+            oscillator2.start(now + 0.1);
+            oscillator2.stop(now + 0.4);
+        }
+
+        function playTurnSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук поворота - быстрый щелчок
+            const now = audioContext.currentTime;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(600, now);
+            oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+            
+            oscillator.start(now);
+            oscillator.stop(now + 0.1);
+        }
+
+        function playCoinSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук сбора монеты - яркий, блестящий
+            const now = audioContext.currentTime;
+            
+            // Основной тон
+            const oscillator1 = audioContext.createOscillator();
+            const gainNode1 = audioContext.createGain();
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+            
+            oscillator1.type = 'triangle';
+            oscillator1.frequency.setValueAtTime(800, now);
+            oscillator1.frequency.exponentialRampToValueAtTime(1200, now + 0.2);
+            oscillator1.frequency.exponentialRampToValueAtTime(600, now + 0.3);
+            
+            gainNode1.gain.setValueAtTime(0.25, now);
+            gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            
+            // Второй тон для эффекта блеска
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.type = 'sine';
+            oscillator2.frequency.setValueAtTime(1500, now + 0.1);
+            oscillator2.frequency.exponentialRampToValueAtTime(2000, now + 0.25);
+            
+            gainNode2.gain.setValueAtTime(0.15, now + 0.1);
+            gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            
+            oscillator1.start(now);
+            oscillator1.stop(now + 0.4);
+            
+            oscillator2.start(now + 0.1);
+            oscillator2.stop(now + 0.35);
+        }
+
+        function playCollisionSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук столкновения - мощный, низкочастотный
+            const now = audioContext.currentTime;
+            
+            // Низкий тон
+            const oscillator1 = audioContext.createOscillator();
+            const gainNode1 = audioContext.createGain();
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+            
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(80, now);
+            oscillator1.frequency.exponentialRampToValueAtTime(40, now + 0.5);
+            
+            gainNode1.gain.setValueAtTime(0.4, now);
+            gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            
+            // Высокий тон для эффекта удара
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.type = 'square';
+            oscillator2.frequency.setValueAtTime(600, now);
+            oscillator2.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+            
+            gainNode2.gain.setValueAtTime(0.3, now);
+            gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            
+            oscillator1.start(now);
+            oscillator1.stop(now + 0.6);
+            
+            oscillator2.start(now);
+            oscillator2.stop(now + 0.4);
+        }
+
+        function playSeasonChangeSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук смены сезона - волшебный, переливчатый
+            const now = audioContext.currentTime;
+            
+            // Первый тон
+            const oscillator1 = audioContext.createOscillator();
+            const gainNode1 = audioContext.createGain();
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+            
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(400, now);
+            oscillator1.frequency.exponentialRampToValueAtTime(800, now + 0.4);
+            oscillator1.frequency.exponentialRampToValueAtTime(400, now + 0.8);
+            
+            gainNode1.gain.setValueAtTime(0.2, now);
+            gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+            
+            // Второй тон
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.type = 'triangle';
+            oscillator2.frequency.setValueAtTime(600, now);
+            oscillator2.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+            oscillator2.frequency.exponentialRampToValueAtTime(600, now + 0.8);
+            
+            gainNode2.gain.setValueAtTime(0.15, now);
+            gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+            
+            oscillator1.start(now);
+            oscillator1.stop(now + 1.0);
+            
+            oscillator2.start(now);
+            oscillator2.stop(now + 1.0);
+        }
+
+        function playTimeChangeSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук смены времени суток - плавный переход
+            const now = audioContext.currentTime;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(300, now);
+            oscillator.frequency.exponentialRampToValueAtTime(700, now + 0.3);
+            oscillator.frequency.exponentialRampToValueAtTime(300, now + 0.6);
+            
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            
+            oscillator.start(now);
+            oscillator.stop(now + 0.8);
+        }
+
+        function playStartSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук начала игры - энергичный
+            const now = audioContext.currentTime;
+            
+            // Основной тон
+            const oscillator1 = audioContext.createOscillator();
+            const gainNode1 = audioContext.createGain();
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+            
+            oscillator1.type = 'sawtooth';
+            oscillator1.frequency.setValueAtTime(200, now);
+            oscillator1.frequency.exponentialRampToValueAtTime(800, now + 0.3);
+            
+            gainNode1.gain.setValueAtTime(0.3, now);
+            gainNode1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            
+            // Акцент
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode2 = audioContext.createGain();
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+            
+            oscillator2.type = 'square';
+            oscillator2.frequency.setValueAtTime(1000, now + 0.2);
+            oscillator2.frequency.exponentialRampToValueAtTime(500, now + 0.4);
+            
+            gainNode2.gain.setValueAtTime(0.2, now + 0.2);
+            gainNode2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            
+            oscillator1.start(now);
+            oscillator1.stop(now + 0.4);
+            
+            oscillator2.start(now + 0.2);
+            oscillator2.stop(now + 0.5);
+        }
+
+        function playFlashlightSound() {
+            if (!soundEnabled || !audioContext) return;
+            
+            // Звук включения/выключения фонарика
+            const now = audioContext.currentTime;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(800, now);
+            oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            oscillator.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+            
+            oscillator.start(now);
+            oscillator.stop(now + 0.3);
+        }
+
+        // Включение/выключение звука
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            
+            if (soundEnabled) {
+                soundBtn.textContent = '🔊';
+                soundBtn.classList.remove('muted');
+                soundIndicator.textContent = 'Звук: ВКЛ';
+                soundIndicator.classList.remove('muted');
+                
+                // Попробовать перезапустить аудио контекст если он был приостановлен
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                // Проиграть тестовый звук при включении
+                setTimeout(() => {
+                    if (soundEnabled) {
+                        playCoinSound();
+                    }
+                }, 100);
+                
+                // Показать индикатор на 2 секунды
+                soundIndicator.classList.remove('hidden');
+                setTimeout(() => {
+                    if (soundEnabled) {
+                        soundIndicator.classList.add('hidden');
+                    }
+                }, 2000);
+            } else {
+                soundBtn.textContent = '🔇';
+                soundBtn.classList.add('muted');
+                soundIndicator.textContent = 'Звук: ВЫКЛ';
+                soundIndicator.classList.add('muted');
+                
+                // Показать индикатор на 2 секунды
+                soundIndicator.classList.remove('hidden');
+                setTimeout(() => {
+                    if (!soundEnabled) {
+                        soundIndicator.classList.add('hidden');
+                    }
+                }, 2000);
+            }
+            
+            // Обновляем экран паузы
+            if (pauseFlashlightElement) {
+                pauseFlashlightElement.textContent = flashlightEnabled ? "ВКЛ" : "ВЫКЛ";
+            }
+        }
+
+        // Включение/выключение фонарика
+        function toggleFlashlight() {
+            // Фонарик можно включать/выключать только ночью
+            if (!isNight) return;
+            
+            flashlightEnabled = !flashlightEnabled;
+            
+            if (flashlight && flashlightLight) {
+                if (flashlightEnabled) {
+                    // Включаем фонарик
+                    flashlightLight.intensity = 2.0;
+                    flashlightLight.visible = true;
+                    flashlightText.textContent = 'Фонарик: ВКЛ';
+                    playFlashlightSound();
+                    
+                    // Показываем индикатор на 2 секунды
+                    flashlightIndicator.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (flashlightEnabled && isNight) {
+                            flashlightIndicator.classList.add('hidden');
+                        }
+                    }, 2000);
+                } else {
+                    // Выключаем фонарик
+                    flashlightLight.intensity = 0;
+                    flashlightLight.visible = false;
+                    flashlightText.textContent = 'Фонарик: ВЫКЛ';
+                    playFlashlightSound();
+                    
+                    // Показываем индикатор на 2 секунды
+                    flashlightIndicator.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (!flashlightEnabled && isNight) {
+                            flashlightIndicator.classList.add('hidden');
+                        }
+                    }, 2000);
+                }
+            }
+            
+            // Обновляем экран паузы
+            if (pauseFlashlightElement) {
+                pauseFlashlightElement.textContent = flashlightEnabled ? "ВКЛ" : "ВЫКЛ";
+            }
+        }
+
+        // Автоматическая смена погоды
+        function autoChangeWeather() {
+            const currentTime = Date.now();
+            
+            if (currentTime - lastWeatherChange > weatherChangeInterval) {
+                // Случайно выбираем, что менять: время суток или сезон
+                if (Math.random() > 0.5) {
+                    toggleTimeOfDay();
+                } else {
+                    toggleSeason();
+                }
+                
+                lastWeatherChange = currentTime;
+            }
+        }
+
+        // Показать/скрыть управление для ПК
+        function showPcControls() {
+            pcControlsModal.classList.remove('hidden');
+        }
+        
+        function hidePcControls() {
+            pcControlsModal.classList.add('hidden');
+        }
+
+        // Проверка ориентации
+        function checkOrientation() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (isPortrait && isMobileDevice) {
+                orientationWarning.classList.add('active');
+            } else {
+                orientationWarning.classList.remove('active');
+            }
+        }
+
+        // Создание фонарика с лучом, направленным по камере игрока
+        function createFlashlight() {
+            if (flashlight) {
+                scene.remove(flashlight);
+            }
+            
+            // Создаем мощный прожектор для фонарика, привязанный к камере
+            // Меняем цвет на фиолетовый (0xaa88ff)
+            flashlightLight = new THREE.SpotLight(0xaa88ff, 2.0);
+            flashlightLight.position.set(0, 0, 0);
+            
+            // Создаем цель для луча - прямо по направлению камеры
+            const target = new THREE.Object3D();
+            target.position.set(0, 0, -50); // Цель далеко впереди
+            
+            flashlightLight.target = target;
+            flashlightLight.angle = Math.PI / 8; // 22.5 градусов - узкий луч
+            flashlightLight.penumbra = 0.2; // Мягкие края
+            flashlightLight.decay = 1.5; // Реалистичное затухание
+            flashlightLight.distance = 100; // Дальность 100 метров
+            flashlightLight.castShadow = true;
+            flashlightLight.shadow.mapSize.width = 1024;
+            flashlightLight.shadow.mapSize.height = 1024;
+            flashlightLight.shadow.camera.near = 0.5;
+            flashlightLight.shadow.camera.far = 100;
+            flashlightLight.shadow.camera.fov = 22.5;
+            
+            // Создаем группу для фонарика
+            flashlight = new THREE.Group();
+            flashlight.add(flashlightLight);
+            flashlight.add(target);
+            
+            // Включаем или выключаем в зависимости от времени суток и настройки
+            if (isNight && flashlightEnabled) {
+                flashlightLight.intensity = 2.0;
+                flashlightLight.visible = true;
+                flashlightText.textContent = 'Фонарик: ВКЛ';
+                // Показываем индикатор при создании
+                if (gameRunning) {
+                    flashlightIndicator.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (isNight) {
+                            flashlightIndicator.classList.add('hidden');
+                        }
+                    }, 2000);
+                }
+            } else {
+                flashlightLight.intensity = 0;
+                flashlightLight.visible = false;
+                flashlightText.textContent = 'Фонарик: ВЫКЛ';
+            }
+            
+            scene.add(flashlight);
+            
+            return flashlight;
+        }
+
+        // Обновление позиции фонарика (привязан к камере игрока)
+        function updateFlashlight() {
+            if (flashlight && flashlightLight) {
+                // Позиционируем фонарик в позиции камеры игрока
+                flashlight.position.copy(camera.position);
+                
+                // Поворачиваем фонарик так же, как и камеру
+                flashlight.rotation.copy(camera.rotation);
+                
+                // Корректируем цель фонарика - направляем прямо по линии взгляда камеры
+                // Создаем вектор, указывающий вперед от камеры
+                const direction = new THREE.Vector3(0, 0, -1);
+                direction.applyQuaternion(camera.quaternion);
+                
+                // Устанавливаем цель на 50 метров вперед по направлению взгляда
+                const targetPosition = new THREE.Vector3(
+                    camera.position.x + direction.x * 50,
+                    camera.position.y + direction.y * 50,
+                    camera.position.z + direction.z * 50
+                );
+                
+                flashlight.children[1].position.copy(targetPosition);
+                
+                // Обновляем видимость и интенсивность в зависимости от времени суток
+                if (isNight && flashlightEnabled) {
+                    flashlightLight.visible = true;
+                    flashlightLight.intensity = 2.0;
+                } else {
+                    flashlightLight.visible = false;
+                    flashlightLight.intensity = 0;
+                }
+            }
+        }
+
+        // Инициализация Three.js сцены
+        function initThreeJS() {
+            // Определяем тип устройства
+            isMobileDevice = detectDeviceType();
+            
+            // Проверяем ориентацию
+            checkOrientation();
+            window.addEventListener('resize', checkOrientation);
+            window.addEventListener('orientationchange', checkOrientation);
+
+            // Создаем сцену
+            scene = new THREE.Scene();
+            
+            // Устанавливаем летнюю дневную погоду по умолчанию
+            setDayTime();
+            setSummerWeather();
+            
+            // Создаем камеру от первого лица
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 5);
+
+            // Создаем рендерер
+            renderer = new THREE.WebGLRenderer({ 
+                canvas, 
+                antialias: true,
+                alpha: false
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Добавляем освещение (будет обновлено в setDayTime/setNightTime)
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+            directionalLight.position.set(20, 40, 10);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            scene.add(directionalLight);
+
+            // Создаем фонарик (будет виден только ночью)
+            createFlashlight();
+
+            // Создаем игрока
+            const playerGeometry = new THREE.BoxGeometry(0.8, playerOriginalHeight, 0.8);
+            const playerMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x3498db,
+                transparent: true,
+                opacity: 0.0
+            });
+            player = new THREE.Mesh(playerGeometry, playerMaterial);
+            player.position.set(0, playerOriginalHeight/2, 0);
+            player.castShadow = false;
+            scene.add(player);
+
+            // Создаем охранника
+            const guardGeometry = new THREE.BoxGeometry(1.8, 2.2, 1.2);
+            const guardMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x333333,
+                shininess: 30
+            });
+            guard = new THREE.Mesh(guardGeometry, guardMaterial);
+            guard.position.set(0, 1, -30);
+            guard.castShadow = true;
+            scene.add(guard);
+
+            // Добавляем детали охранику
+            addGuardDetails();
+
+            // Создаем бесконечную дорогу и окружение
+            createEnvironment();
+
+            // Создаем снежинки для зимнего режима
+            createSnowParticles();
+
+            // Создаем звезды для ночного режима
+            createStars();
+
+            // Обработка изменения размера окна
+            window.addEventListener('resize', onWindowResize);
+            
+            // Инициализация размера
+            onWindowResize();
+            
+            // Добавляем обработчик для fullscreen изменений
+            document.addEventListener('fullscreenchange', updateFullscreenStyles);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenStyles);
+            document.addEventListener('mozfullscreenchange', updateFullscreenStyles);
+            document.addEventListener('MSFullscreenChange', updateFullscreenStyles);
+            
+            // Обновляем стили при входе/выходе из полноэкранного режима
+            function updateFullscreenStyles() {
+                const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || 
+                                    document.mozFullScreenElement || document.msFullscreenElement;
+                
+                if (isFullscreen) {
+                    fullscreenBtn.textContent = '🗗';
+                    fullscreenBtn.classList.add('active');
+                } else {
+                    fullscreenBtn.textContent = '⛶';
+                    fullscreenBtn.classList.remove('active');
+                }
+                
+                // Обновляем размеры при входе в полноэкранный режим
+                setTimeout(onWindowResize, 100);
+            }
+        }
+
+        // Установка дневного времени
+        function setDayTime() {
+            isNight = false;
+            
+            // Обновляем UI
+            if (timeOfDayElement) {
+                timeOfDayElement.textContent = "Время: День";
+            }
+            
+            // Обновляем освещение
+            if (ambientLight) {
+                ambientLight.intensity = 0.7;
+                ambientLight.color.setHex(0xffffff);
+            }
+            
+            if (directionalLight) {
+                directionalLight.intensity = 0.9;
+                directionalLight.color.setHex(0xffffff);
+                directionalLight.position.set(20, 40, 10);
+            }
+            
+            // Выключаем фонарик
+            if (flashlight && flashlightLight) {
+                flashlightLight.visible = false;
+                flashlightLight.intensity = 0;
+                flashlightText.textContent = 'Фонарик: ВЫКЛ';
+                flashlightIndicator.classList.add('hidden');
+            }
+            
+            // Обновляем фон
+            scene.background = new THREE.Color(isWinter ? 0x87A8CB : 0x87CEEB);
+            
+            // Обновляем туман
+            if (scene.fog) {
+                scene.fog.color.setHex(isWinter ? 0xD3E3F5 : 0x87CEEB);
+                scene.fog.near = isWinter ? 15 : 20;
+                scene.fog.far = isWinter ? 100 : 150;
+            }
+            
+            // Прячем звезды
+            stars.forEach(star => {
+                star.visible = false;
+            });
+            
+            // Обновляем фонари (выключаем свечение)
+            environmentObjects.forEach(obj => {
+                if (obj.userData.type === 'lamp') {
+                    obj.children.forEach(child => {
+                        if (child.geometry && child.geometry.type === "SphereGeometry") {
+                            child.material.emissive.setHex(isWinter ? 0x222200 : 0x444400);
+                        }
+                    });
+                }
+            });
+            
+            // Воспроизводим звук смены времени
+            if (gameRunning) playTimeChangeSound();
+        }
+
+        // Установка ночного времени
+        function setNightTime() {
+            isNight = true;
+            
+            // Обновляем UI
+            if (timeOfDayElement) {
+                timeOfDayElement.textContent = "Время: Ночь";
+            }
+            
+            // Обновляем освещение
+            if (ambientLight) {
+                ambientLight.intensity = 0.3;
+                ambientLight.color.setHex(0x4444aa);
+            }
+            
+            if (directionalLight) {
+                directionalLight.intensity = 0.3;
+                directionalLight.color.setHex(0xaaaaff);
+                directionalLight.position.set(-10, 30, -20);
+            }
+            
+            // Включаем фонарик (если он включен в настройках)
+            if (flashlight && flashlightLight) {
+                if (flashlightEnabled) {
+                    flashlightLight.visible = true;
+                    flashlightLight.intensity = 2.0;
+                    flashlightText.textContent = 'Фонарик: ВКЛ';
+                    
+                    // Показываем индикатор при смене на ночное время
+                    if (gameRunning) {
+                        flashlightIndicator.classList.remove('hidden');
+                        setTimeout(() => {
+                            if (isNight) {
+                                flashlightIndicator.classList.add('hidden');
+                            }
+                        }, 2000);
+                    }
+                } else {
+                    flashlightLight.visible = false;
+                    flashlightLight.intensity = 0;
+                    flashlightText.textContent = 'Фонарик: ВЫКЛ';
+                }
+                // Обновляем позицию фонарика
+                updateFlashlight();
+            } else {
+                createFlashlight();
+            }
+            
+            // Обновляем фон
+            scene.background = new THREE.Color(0x000022);
+            
+            // Обновляем туман
+            if (scene.fog) {
+                scene.fog.color.setHex(0x111133);
+                scene.fog.near = 10;
+                scene.fog.far = 80;
+            }
+            
+            // Показываем звезды
+            stars.forEach(star => {
+                star.visible = true;
+            });
+            
+            // Обновляем фонари (включаем свечение)
+            environmentObjects.forEach(obj => {
+                if (obj.userData.type === 'lamp') {
+                    obj.children.forEach(child => {
+                        if (child.geometry && child.geometry.type === "SphereGeometry") {
+                            child.material.emissive.setHex(0xffff00);
+                        }
+                    });
+                }
+            });
+            
+            // Воспроизводим звук смены времени
+            if (gameRunning) playTimeChangeSound();
+        }
+
+        // Переключение времени суток
+        function toggleTimeOfDay() {
+            isNight = !isNight;
+            timeTransitionTime = Date.now();
+            
+            if (isNight) {
+                setNightTime();
+            } else {
+                setDayTime();
+            }
+            
+            // Обновляем снежинки (меняем цвет в ночное время)
+            updateSnowColor();
+            
+            // Обновляем все объекты окружения
+            updateEnvironmentColors();
+        }
+
+        // Установка летней погоды
+        function setSummerWeather() {
+            isWinter = false;
+            
+            // Обновляем UI
+            if (seasonElement) {
+                seasonElement.textContent = "Сезон: Лето";
+            }
+            
+            // Обновляем фон и туман в зависимости от времени суток
+            if (isNight) {
+                scene.background = new THREE.Color(0x000022);
+                scene.fog = new THREE.Fog(0x111133, 10, 80);
+            } else {
+                scene.background = new THREE.Color(0x87CEEB);
+                scene.fog = new THREE.Fog(0x87CEEB, 20, 150);
+            }
+            
+            // Обновляем цвет травы и окружения
+            updateEnvironmentColors();
+            updateSnowColor();
+            
+            // Прячем снежинки
+            snowParticles.forEach(snow => {
+                snow.visible = false;
+            });
+            
+            // Воспроизводим звук смены сезона
+            if (gameRunning) playSeasonChangeSound();
+        }
+
+        // Установка зимней погоды
+        function setWinterWeather() {
+            isWinter = true;
+            
+            // Обновляем UI
+            if (seasonElement) {
+                seasonElement.textContent = "Сезон: Зима";
+            }
+            
+            // Обновляем фон и туман в зависимости от времени суток
+            if (isNight) {
+                scene.background = new THREE.Color(0x000022);
+                scene.fog = new THREE.Fog(0x111133, 10, 80);
+            } else {
+                scene.background = new THREE.Color(0x87A8CB);
+                scene.fog = new THREE.Fog(0xD3E3F5, 15, 100);
+            }
+            
+            // Обновляем цвет травы и окружения
+            updateEnvironmentColors();
+            updateSnowColor();
+            
+            // Показываем снежинки
+            snowParticles.forEach(snow => {
+                snow.visible = true;
+            });
+            
+            // Воспроизводим звук смены сезона
+            if (gameRunning) playSeasonChangeSound();
+        }
+
+        // Обновление цвета снежинок
+        function updateSnowColor() {
+            const snowColor = isNight ? 0xaaaaff : 0xffffff;
+            snowParticles.forEach(snow => {
+                snow.material.color.setHex(snowColor);
+                snow.material.opacity = isNight ? 0.6 : 0.8;
+            });
+        }
+
+        // Обновление цветов окружения в зависимости от сезона и времени суток
+        function updateEnvironmentColors() {
+            if (road) {
+                road.material.color.setHex(isWinter ? 0x666666 : 0x444444);
+            }
+            
+            if (leftGrass && rightGrass) {
+                let grassColor;
+                if (isNight) {
+                    grassColor = isWinter ? 0x2a4b5c : 0x1a4a2a;
+                } else {
+                    grassColor = isWinter ? 0xE0F7FA : 0x27ae60;
+                }
+                leftGrass.material.color.setHex(grassColor);
+                rightGrass.material.color.setHex(grassColor);
+            }
+            
+            // Обновляем цвет деревьев
+            environmentObjects.forEach(obj => {
+                if (obj.userData.type === 'tree') {
+                    obj.children.forEach(child => {
+                        if (child.geometry && child.geometry.type === "SphereGeometry") {
+                            let crownColor;
+                            if (isNight) {
+                                crownColor = isWinter ? 0x3a5b7c : 0x1a5a2a;
+                            } else {
+                                crownColor = isWinter ? 0xD3E3F5 : 0x228B22;
+                            }
+                            child.material.color.setHex(crownColor);
+                        }
+                        if (child.geometry && child.geometry.type === "CylinderGeometry") {
+                            let trunkColor = isWinter ? 0xA0522D : 0x8B4513;
+                            if (isNight) {
+                                trunkColor = 0x5a321d;
+                            }
+                            child.material.color.setHex(trunkColor);
+                        }
+                    });
+                }
+                
+                if (obj.userData.type === 'circus') {
+                    // Обновляем цвет цирка в зависимости от времени суток
+                    obj.children.forEach(child => {
+                        if (child.userData && child.userData.isMainTent) {
+                            let tentColor = 0xff4444; // Красный по умолчанию
+                            if (isNight) {
+                                tentColor = 0xaa2222;
+                            } else if (isWinter) {
+                                tentColor = 0xcc6666;
+                            }
+                            child.material.color.setHex(tentColor);
+                            
+                            if (child.userData && child.userData.isStriped) {
+                                child.children.forEach(stripe => {
+                                    if (stripe.material) {
+                                        let stripeColor = isNight ? 0xffffaa : 0xffdd88;
+                                        stripe.material.color.setHex(stripeColor);
+                                    }
+                                });
+                            }
+                        }
+                        
+                        if (child.userData && child.userData.isRoof) {
+                            let roofColor = isNight ? 0x884400 : 0xffaa00;
+                            child.material.color.setHex(roofColor);
+                        }
+                        
+                        if (child.userData && child.userData.isFlag) {
+                            let flagColor = isNight ? 0xaa4444 : 0xff6666;
+                            child.material.color.setHex(flagColor);
+                        }
+                    });
+                }
+                
+                if (obj.userData.type === 'cloud') {
+                    obj.children.forEach(child => {
+                        if (child.geometry && child.geometry.type === "SphereGeometry") {
+                            let cloudColor = isWinter ? 0xF5F5F5 : 0xffffff;
+                            if (isNight) {
+                                cloudColor = 0x444444;
+                            }
+                            child.material.color.setHex(cloudColor);
+                            child.material.opacity = isNight ? 0.4 : (isWinter ? 0.9 : 0.8);
+                        }
+                    });
+                }
+            });
+            
+            // Обновляем цвет полосок на дороге
+            roadLines.forEach(line => {
+                let lineColor;
+                if (isNight) {
+                    lineColor = isWinter ? 0x8888aa : 0xaaaaff;
+                } else {
+                    lineColor = isWinter ? 0xF0F8FF : 0xffffff;
+                }
+                line.material.color.setHex(lineColor);
+                line.material.emissive.setHex(isNight ? 0x222244 : 0x222222);
+            });
+        }
+
+        // Создание снежинок
+        function createSnowParticles() {
+            const snowCount = 500;
+            const snowGeometry = new THREE.BufferGeometry();
+            const snowMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const positions = new Float32Array(snowCount * 3);
+            
+            for (let i = 0; i < snowCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 100; // X
+                positions[i + 1] = Math.random() * 50 + 10; // Y
+                positions[i + 2] = (Math.random() - 0.5) * 100; // Z
+            }
+            
+            snowGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const snowParticleSystem = new THREE.Points(snowGeometry, snowMaterial);
+            snowParticleSystem.visible = isWinter;
+            scene.add(snowParticleSystem);
+            snowParticles.push(snowParticleSystem);
+        }
+
+        // Создание звезд
+        function createStars() {
+            const starCount = 300;
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.15,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const positions = new Float32Array(starCount * 3);
+            
+            for (let i = 0; i < starCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 200; // X
+                positions[i + 1] = Math.random() * 100 + 20; // Y
+                positions[i + 2] = (Math.random() - 0.5) * 200; // Z
+            }
+            
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const starParticleSystem = new THREE.Points(starGeometry, starMaterial);
+            starParticleSystem.visible = isNight;
+            scene.add(starParticleSystem);
+            stars.push(starParticleSystem);
+        }
+
+        // Обновление снежинок
+        function updateSnowParticles(deltaTime) {
+            if (!isWinter) return;
+            
+            snowParticles.forEach(snow => {
+                const positions = snow.geometry.attributes.position.array;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i + 1] -= 0.05 * currentSpeed; // Падение вниз
+                    positions[i] += (Math.random() - 0.5) * 0.01; // Легкое движение в стороны
+                    
+                    // Если снежинка упала слишком низко, перемещаем ее наверх
+                    if (positions[i + 1] < 5) {
+                        positions[i + 1] = Math.random() * 50 + 10;
+                        positions[i] = (Math.random() - 0.5) * 100;
+                        positions[i + 2] = (Math.random() - 0.5) * 100;
+                    }
+                }
+                
+                snow.geometry.attributes.position.needsUpdate = true;
+            });
+        }
+
+        // Обновление звезд
+        function updateStars(deltaTime) {
+            if (!isNight) return;
+            
+            stars.forEach(star => {
+                const positions = star.geometry.attributes.position.array;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    // Легкое мерцание звезд
+                    positions[i] += (Math.random() - 0.5) * 0.001;
+                    positions[i + 1] += (Math.random() - 0.5) * 0.001;
+                }
+                
+                star.geometry.attributes.position.needsUpdate = true;
+            });
+        }
+
+        // Переключение сезона
+        function toggleSeason() {
+            isWinter = !isWinter;
+            seasonTransitionTime = Date.now();
+            
+            if (isWinter) {
+                setWinterWeather();
+            } else {
+                setSummerWeather();
+            }
+            
+            // Обновляем снежинки
+            snowParticles.forEach(snow => {
+                snow.visible = isWinter;
+            });
+            
+            // Обновляем все объекты окружения
+            updateEnvironmentColors();
+        }
+
+        // Пауза игры
+        function togglePause() {
+            if (!gameRunning) return;
+            
+            gamePaused = !gamePaused;
+            
+            if (gamePaused) {
+                // Показываем экран паузы
+                pauseScreen.classList.remove('hidden');
+                pauseScoreElement.textContent = Math.floor(score);
+                pauseDistanceElement.textContent = Math.floor(distance) + "м";
+                pauseSpeedElement.textContent = speedMultiplier.toFixed(1) + "x";
+                pauseTimeElement.textContent = isNight ? "Ночь" : "День";
+                pauseSeasonElement.textContent = isWinter ? "Зима" : "Лето";
+                pauseFlashlightElement.textContent = flashlightEnabled ? "ВКЛ" : "ВЫКЛ";
+                document.getElementById('pauseSound').textContent = soundEnabled ? "ВКЛ" : "ВЫКЛ";
+                
+                // Останавливаем игровой цикл
+                cancelAnimationFrame(animationId);
+            } else {
+                // Скрываем экран паузы
+                pauseScreen.classList.add('hidden');
+                
+                // Возобновляем игровой цикл
+                gameLoop();
+            }
+        }
+
+        // Выход в главное меню
+        function exitToMainMenu() {
+            if (gameRunning) {
+                gameRunning = false;
+                gamePaused = false;
+                cancelAnimationFrame(animationId);
+            }
+            
+            // Скрываем все экраны кроме стартового
+            pauseScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            
+            // Сбрасываем игру
+            resetGame();
+        }
+
+        // Сброс игры
+        function resetGame() {
+            score = 0;
+            distance = 0;
+            currentSpeed = baseSpeed;
+            speedMultiplier = 1;
+            maxSpeed = currentSpeed;
+            playerLane = 1;
+            isJumping = false;
+            obstacleInterval = 1800;
+            coinInterval = 900;
+            
+            // Удаляем все объекты
+            obstacles.forEach(obstacle => scene.remove(obstacle));
+            coins.forEach(coin => scene.remove(coin));
+            obstacles = [];
+            coins = [];
+            
+            // Сбрасываем позиции
+            if (player) {
+                player.position.set(0, playerOriginalHeight/2, 0);
+                player.scale.y = 1;
+            }
+            
+            if (guard) {
+                guard.position.set(0, 1, -30);
+            }
+            
+            // Обновляем UI
+            scoreElement.textContent = `Очки: ${Math.floor(score)}`;
+            distanceElement.textContent = `Дистанция: ${Math.floor(distance)}м`;
+            speedElement.textContent = `Скорость: ${speedMultiplier.toFixed(1)}x`;
+        }
+
+        // Добавление деталей охранику
+        function addGuardDetails() {
+            // Глаза
+            const eyeGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+            const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            leftEye.position.set(-0.4, 0.3, 0.61);
+            guard.add(leftEye);
+            
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            rightEye.position.set(0.4, 0.3, 0.61);
+            guard.add(rightEye);
+            
+            // Зрачки
+            const pupilGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+            const pupilMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            
+            const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+            leftPupil.position.set(-0.4, 0.3, 0.71);
+            guard.add(leftPupil);
+            
+            const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+            rightPupil.position.set(0.4, 0.3, 0.71);
+            guard.add(rightPupil);
+            
+            // Рот
+            const mouthGeometry = new THREE.BoxGeometry(0.8, 0.1, 0.1);
+            const mouthMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+            mouth.position.set(0, -0.2, 0.61);
+            guard.add(mouth);
+            
+            // Рация в руке
+            const radioGeometry = new THREE.BoxGeometry(0.4, 0.6, 0.2);
+            const radioMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x444444,
+                shininess: 10
+            });
+            const radio = new THREE.Mesh(radioGeometry, radioMaterial);
+            radio.position.set(1.2, 0, 0);
+            radio.rotation.z = -0.3;
+            guard.add(radio);
+            
+            // Антенна рации
+            const antennaGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.4);
+            const antennaMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
+            const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
+            antenna.position.set(0, 0.3, 0.11);
+            antenna.rotation.x = Math.PI / 4;
+            radio.add(antenna);
+            
+            // Форма охранника
+            const uniformGeometry = new THREE.BoxGeometry(1.6, 0.8, 1.3);
+            const uniformMaterial = new THREE.MeshPhongMaterial({ color: 0x2c3e50 });
+            const uniform = new THREE.Mesh(uniformGeometry, uniformMaterial);
+            uniform.position.set(0, -0.3, 0.61);
+            guard.add(uniform);
+            
+            // Шеврон на форме
+            const chevronGeometry = new THREE.PlaneGeometry(0.3, 0.4);
+            const chevronMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xFFD700,
+                side: THREE.DoubleSide
+            });
+            const chevron = new THREE.Mesh(chevronGeometry, chevronMaterial);
+            chevron.position.set(0, -0.3, 0.71);
+            chevron.rotation.y = Math.PI;
+            guard.add(chevron);
+        }
+
+        // Создание окружения
+        function createEnvironment() {
+            // Создаем основную дорогу
+            const roadLength = 200;
+            const roadGeometry = new THREE.PlaneGeometry(15, roadLength);
+            const roadMaterial = new THREE.MeshPhongMaterial({ 
+                color: isWinter ? 0x666666 : 0x444444,
+                shininess: 5
+            });
+            road = new THREE.Mesh(roadGeometry, roadMaterial);
+            road.rotation.x = -Math.PI / 2;
+            road.position.y = -0.1;
+            road.receiveShadow = true;
+            scene.add(road);
+
+            // Добавляем траву по бокам
+            const grassGeometry = new THREE.PlaneGeometry(60, roadLength);
+            let grassColor;
+            if (isNight) {
+                grassColor = isWinter ? 0x2a4b5c : 0x1a4a2a;
+            } else {
+                grassColor = isWinter ? 0xE0F7FA : 0x27ae60;
+            }
+            const grassMaterial = new THREE.MeshPhongMaterial({ color: grassColor });
+            
+            leftGrass = new THREE.Mesh(grassGeometry, grassMaterial);
+            leftGrass.rotation.x = -Math.PI / 2;
+            leftGrass.position.set(-37.5, -0.09, 0);
+            leftGrass.receiveShadow = true;
+            scene.add(leftGrass);
+
+            rightGrass = new THREE.Mesh(grassGeometry, grassMaterial);
+            rightGrass.rotation.x = -Math.PI / 2;
+            rightGrass.position.set(37.5, -0.09, 0);
+            rightGrass.receiveShadow = true;
+            scene.add(rightGrass);
+
+            // Создаем полоски на дороге
+            createRoadLines();
+
+            // Создаем окружение вокруг игрока
+            createMovingEnvironment();
+        }
+
+        // Создание полосок на дороге
+        function createRoadLines() {
+            roadLines = [];
+            const lineCount = 40;
+            const spacing = 5;
+            
+            for (let i = 0; i < lineCount; i++) {
+                const lineGeometry = new THREE.PlaneGeometry(0.3, 2);
+                let lineColor;
+                if (isNight) {
+                    lineColor = isWinter ? 0x8888aa : 0xaaaaff;
+                } else {
+                    lineColor = isWinter ? 0xF0F8FF : 0xffffff;
+                }
+                const lineMaterial = new THREE.MeshPhongMaterial({ 
+                    color: lineColor,
+                    emissive: isNight ? 0x222244 : 0x222222
+                });
+                const line = new THREE.Mesh(lineGeometry, lineMaterial);
+                line.rotation.x = -Math.PI / 2;
+                line.position.set(0, 0.01, -i * spacing);
+                line.receiveShadow = true;
+                line.userData = { initialZ: -i * spacing };
+                scene.add(line);
+                roadLines.push(line);
+            }
+        }
+
+        // Обновление полосок на дороге
+        function updateRoadLines(deltaTime) {
+            const moveSpeed = currentSpeed * deltaTime * 60 * 2;
+            
+            for (let i = 0; i < roadLines.length; i++) {
+                const line = roadLines[i];
+                
+                // Двигаем полоску назад
+                line.position.z += moveSpeed;
+                
+                // Если полоска ушла слишком далеко вперед, перемещаем ее назад
+                if (line.position.z > 20) {
+                    let minZ = Infinity;
+                    for (let j = 0; j < roadLines.length; j++) {
+                        if (roadLines[j].position.z < minZ) {
+                            minZ = roadLines[j].position.z;
+                        }
+                    }
+                    
+                    line.position.z = minZ - 5;
+                }
+            }
+        }
+
+        // Создание движущегося окружения
+        function createMovingEnvironment() {
+            environmentObjects = [];
+            
+            const densityMultiplier = window.innerWidth < 768 ? 0.5 : 1;
+            
+            // Добавляем деревья
+            for (let i = -15; i < 15; i++) {
+                const leftTree = createTree();
+                leftTree.position.set(-10 + Math.random() * 5 - 2.5, 0, i * 20 * densityMultiplier + Math.random() * 20 - 10);
+                leftTree.userData = { type: 'tree', side: 'left' };
+                scene.add(leftTree);
+                environmentObjects.push(leftTree);
+                
+                const rightTree = createTree();
+                rightTree.position.set(10 + Math.random() * 5 - 2.5, 0, i * 20 * densityMultiplier + Math.random() * 20 - 10);
+                rightTree.userData = { type: 'tree', side: 'right' };
+                scene.add(rightTree);
+                environmentObjects.push(rightTree);
+            }
+
+            // Добавляем фонари
+            for (let i = -10; i < 10; i++) {
+                const leftLamp = createStreetLamp();
+                leftLamp.position.set(-8, 0, i * 20 * densityMultiplier + Math.random() * 5);
+                leftLamp.userData = { type: 'lamp', side: 'left' };
+                scene.add(leftLamp);
+                environmentObjects.push(leftLamp);
+                
+                const rightLamp = createStreetLamp();
+                rightLamp.position.set(8, 0, i * 20 * densityMultiplier + Math.random() * 5);
+                rightLamp.userData = { type: 'lamp', side: 'right' };
+                scene.add(rightLamp);
+                environmentObjects.push(rightLamp);
+            }
+
+            // Добавляем облака
+            for (let i = 0; i < 10; i++) {
+                const cloud = createCloud();
+                cloud.position.set(
+                    Math.random() * 80 - 40,
+                    15 + Math.random() * 10,
+                    Math.random() * 80 - 40
+                );
+                cloud.userData = { type: 'cloud' };
+                scene.add(cloud);
+                environmentObjects.push(cloud);
+            }
+
+            // Добавляем цирки на заднем плане (заменяем дома)
+            for (let i = -8; i < 8; i++) {
+                const leftCircus = createCircus();
+                leftCircus.position.set(-25, 0, i * 40 * densityMultiplier + Math.random() * 20 - 10);
+                leftCircus.userData = { type: 'circus', side: 'left' };
+                scene.add(leftCircus);
+                environmentObjects.push(leftCircus);
+                
+                const rightCircus = createCircus();
+                rightCircus.position.set(25, 0, i * 40 * densityMultiplier + Math.random() * 20 - 10);
+                rightCircus.userData = { type: 'circus', side: 'right' };
+                scene.add(rightCircus);
+                environmentObjects.push(rightCircus);
+            }
+        }
+
+        // Создание дерева
+        function createTree() {
+            const treeGroup = new THREE.Group();
+            
+            // Ствол
+            const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 2);
+            let trunkColor = isWinter ? 0xA0522D : 0x8B4513;
+            if (isNight) {
+                trunkColor = 0x5a321d;
+            }
+            const trunkMaterial = new THREE.MeshPhongMaterial({ 
+                color: trunkColor
+            });
+            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+            trunk.position.y = 1;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+            
+            // Крона
+            const crownGeometry = new THREE.SphereGeometry(1.5, 6, 4);
+            let crownColor;
+            if (isNight) {
+                crownColor = isWinter ? 0x3a5b7c : 0x1a5a2a;
+            } else {
+                crownColor = isWinter ? 0xD3E3F5 : 0x228B22;
+            }
+            const crownMaterial = new THREE.MeshPhongMaterial({ color: crownColor });
+            const crown = new THREE.Mesh(crownGeometry, crownMaterial);
+            crown.position.y = 3;
+            crown.castShadow = true;
+            treeGroup.add(crown);
+            
+            return treeGroup;
+        }
+
+        // Создание цирка (вместо домов)
+        function createCircus() {
+            const circusGroup = new THREE.Group();
+            
+            // Основной шатер (большой конус)
+            const tentHeight = 8 + Math.random() * 2;
+            const tentRadius = 5 + Math.random() * 2;
+            
+            // Основная часть шатра (цилиндр)
+            const mainTentGeometry = new THREE.CylinderGeometry(tentRadius, tentRadius * 1.2, tentHeight * 0.6, 16);
+            const mainTentMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff4444,
+                emissive: isNight ? 0x220000 : 0x000000,
+                shininess: 30
+            });
+            const mainTent = new THREE.Mesh(mainTentGeometry, mainTentMaterial);
+            mainTent.position.y = tentHeight * 0.3;
+            mainTent.castShadow = true;
+            mainTent.userData = { isMainTent: true };
+            circusGroup.add(mainTent);
+            
+            // Полоски на шатре
+            const stripeCount = 6;
+            for (let i = 0; i < stripeCount; i++) {
+                const stripeHeight = 0.3;
+                const stripeY = (i / stripeCount) * tentHeight * 0.6;
+                const stripeGeometry = new THREE.TorusGeometry(tentRadius - 0.1, 0.15, 8, 32, Math.PI);
+                const stripeMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0xffdd88,
+                    emissive: isNight ? 0x442200 : 0x000000
+                });
+                const stripe = new THREE.Mesh(stripeGeometry, stripeMaterial);
+                stripe.rotation.x = Math.PI / 2;
+                stripe.position.y = stripeY + 0.5;
+                stripe.scale.set(1, 1, 0.1);
+                stripe.userData = { isStriped: true };
+                mainTent.add(stripe);
+            }
+            
+            // Крыша шатра (конус)
+            const roofGeometry = new THREE.ConeGeometry(tentRadius * 0.8, tentHeight * 0.4, 16);
+            const roofMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xffaa00,
+                emissive: isNight ? 0x442200 : 0x000000
+            });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = tentHeight * 0.6 + tentHeight * 0.2;
+            roof.castShadow = true;
+            roof.userData = { isRoof: true };
+            circusGroup.add(roof);
+            
+            // Флажок на вершине
+            const flagPoleGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1.5);
+            const flagPoleMaterial = new THREE.MeshPhongMaterial({ color: 0x886622 });
+            const flagPole = new THREE.Mesh(flagPoleGeometry, flagPoleMaterial);
+            flagPole.position.y = tentHeight + 0.5;
+            flagPole.castShadow = true;
+            circusGroup.add(flagPole);
+            
+            const flagGeometry = new THREE.BoxGeometry(0.8, 0.5, 0.1);
+            const flagMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff6666,
+                emissive: isNight ? 0x331111 : 0x000000
+            });
+            const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+            flag.position.set(0.5, tentHeight + 0.5, 0);
+            flag.castShadow = true;
+            flag.userData = { isFlag: true };
+            circusGroup.add(flag);
+            
+            // Вход в цирк
+            const entranceGeometry = new THREE.BoxGeometry(2, 3, 0.5);
+            const entranceMaterial = new THREE.MeshPhongMaterial({ color: 0x884422 });
+            const entrance = new THREE.Mesh(entranceGeometry, entranceMaterial);
+            entrance.position.set(0, 1.5, tentRadius);
+            entrance.castShadow = true;
+            circusGroup.add(entrance);
+            
+            // Арка над входом
+            const archGeometry = new THREE.TorusGeometry(1, 0.2, 8, 16, Math.PI);
+            const archMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
+            const arch = new THREE.Mesh(archGeometry, archMaterial);
+            arch.rotation.x = Math.PI / 2;
+            arch.rotation.z = Math.PI / 2;
+            arch.position.set(0, 3, tentRadius + 0.1);
+            arch.scale.set(0.8, 0.8, 0.8);
+            circusGroup.add(arch);
+            
+            return circusGroup;
+        }
+
+        // Создание фонарного столба
+        function createStreetLamp() {
+            const lampGroup = new THREE.Group();
+            
+            // Столб
+            const poleGeometry = new THREE.CylinderGeometry(0.1, 0.15, 5);
+            const poleMaterial = new THREE.MeshPhongMaterial({ color: 0x666666 });
+            const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+            pole.position.y = 2.5;
+            pole.castShadow = true;
+            lampGroup.add(pole);
+            
+            // Фонарь
+            const lampGeometry = new THREE.SphereGeometry(0.4, 6, 4);
+            const lampMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xFFFF00,
+                emissive: isNight ? 0xffff00 : (isWinter ? 0x222200 : 0x444400)
+            });
+            const lamp = new THREE.Mesh(lampGeometry, lampMaterial);
+            lamp.position.y = 5;
+            lamp.castShadow = true;
+            lampGroup.add(lamp);
+            
+            return lampGroup;
+        }
+
+        // Создание облака
+        function createCloud() {
+            const cloudGroup = new THREE.Group();
+            
+            for (let i = 0; i < 3; i++) {
+                const cloudPartGeometry = new THREE.SphereGeometry(1 + Math.random() * 0.5, 6, 4);
+                let cloudColor = isWinter ? 0xF5F5F5 : 0xffffff;
+                if (isNight) {
+                    cloudColor = 0x444444;
+                }
+                const cloudPartMaterial = new THREE.MeshPhongMaterial({ 
+                    color: cloudColor,
+                    transparent: true,
+                    opacity: isNight ? 0.4 : (isWinter ? 0.9 : 0.8)
+                });
+                const cloudPart = new THREE.Mesh(cloudPartGeometry, cloudPartMaterial);
+                cloudPart.position.set(
+                    (i - 1) * 1.2,
+                    Math.random() * 0.5,
+                    Math.random() * 0.5
+                );
+                cloudGroup.add(cloudPart);
+            }
+            
+            return cloudGroup;
+        }
+
+        // Обработка изменения размера окна
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Для мобильных устройств: подстраиваем интерфейс под безопасные зоны
+            updateSafeAreaInsets();
+        }
+        
+        // Обновление отступов безопасной зоны
+        function updateSafeAreaInsets() {
+            if (isMobileDevice) {
+                const ui = document.querySelector('.ui');
+                const soundBtn = document.querySelector('.sound-btn');
+                const fullscreenBtn = document.querySelector('.fullscreen-btn');
+                const exitBtn = document.querySelector('.exit-btn');
+                const touchControls = document.querySelector('.touch-controls');
+                
+                // Применяем env() для безопасных зон
+                ui.style.top = 'env(safe-area-inset-top, 10px)';
+                ui.style.left = 'env(safe-area-inset-left, 10px)';
+                
+                soundBtn.style.top = 'env(safe-area-inset-top, 10px)';
+                soundBtn.style.right = 'calc(110px + env(safe-area-inset-right, 0px))';
+                
+                fullscreenBtn.style.top = 'env(safe-area-inset-top, 10px)';
+                fullscreenBtn.style.right = 'calc(60px + env(safe-area-inset-right, 0px))';
+                
+                exitBtn.style.top = 'env(safe-area-inset-top, 10px)';
+                exitBtn.style.right = 'calc(10px + env(safe-area-inset-right, 0px))';
+                
+                touchControls.style.bottom = 'calc(20px + env(safe-area-inset-bottom, 0px))';
+                touchControls.style.padding = '0 calc(20px + env(safe-area-inset-left, 0px)) 0 calc(20px + env(safe-area-inset-right, 0px))';
+            }
+        }
+
+        // Создание препятствия (апрельское обновление - цирковые препятствия)
+        function createObstacle() {
+            const obstacleTypes = [
+                { 
+                    width: 1.8, 
+                    height: 1.2, 
+                    depth: 1.5, 
+                    color: 0xffaa00, 
+                    name: "Клоунские ботинки",
+                    createCustom: createClownShoes
+                },
+                { 
+                    width: 1.5, 
+                    height: 1.2, 
+                    depth: 1.5, 
+                    color: 0xff6666, 
+                    name: "Цирковой торт",
+                    createCustom: createCircusCake
+                },
+                { 
+                    width: 1.4, 
+                    height: 2.0, 
+                    depth: 1.0, 
+                    color: 0x44aaff, 
+                    name: "Фокусник",
+                    createCustom: createMagician
+                },
+                { 
+                    width: 1.6, 
+                    height: 1.6, 
+                    depth: 1.6, 
+                    color: 0xff44ff, 
+                    name: "Цирковые шары",
+                    createCustom: createCircusBalls
+                },
+                // Добавляем нового клоуна на ногах
+                { 
+                    width: 1.2, 
+                    height: 2.5, 
+                    depth: 1.2, 
+                    color: 0xff5555, 
+                    name: "Клоун на ногах",
+                    createCustom: createStandingClown
+                }
+            ];
+            
+            const typeIndex = Math.floor(Math.random() * obstacleTypes.length);
+            const type = obstacleTypes[typeIndex];
+            const lane = Math.floor(Math.random() * 3);
+            
+            let obstacle;
+            
+            // Создаем кастомное препятствие или обычное
+            if (type.createCustom) {
+                obstacle = type.createCustom();
+            } else {
+                const geometry = new THREE.BoxGeometry(type.width, type.height, type.depth);
+                let obstacleColor = isWinter ? type.color - 0x222222 : type.color;
+                if (isNight) {
+                    obstacleColor = obstacleColor - 0x111111;
+                }
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: obstacleColor,
+                    shininess: 30
+                });
+                obstacle = new THREE.Mesh(geometry, material);
+            }
+            
+            obstacle.position.set(lanes[lane], type.height / 2, -50);
+            obstacle.castShadow = true;
+            obstacle.userData = { 
+                type: 'obstacle', 
+                lane, 
+                height: type.height,
+                name: type.name
+            };
+            
+            scene.add(obstacle);
+            obstacles.push(obstacle);
+        }
+
+        // Создание клоунских ботинок
+        function createClownShoes() {
+            const group = new THREE.Group();
+            
+            // Левый ботинок
+            const leftShoeGeometry = new THREE.BoxGeometry(0.8, 0.5, 1.8);
+            const leftShoeMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa00 });
+            const leftShoe = new THREE.Mesh(leftShoeGeometry, leftShoeMaterial);
+            leftShoe.position.set(-0.5, 0.25, 0);
+            leftShoe.castShadow = true;
+            group.add(leftShoe);
+            
+            // Правый ботинок
+            const rightShoeGeometry = new THREE.BoxGeometry(0.8, 0.5, 1.8);
+            const rightShoeMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa00 });
+            const rightShoe = new THREE.Mesh(rightShoeGeometry, rightShoeMaterial);
+            rightShoe.position.set(0.5, 0.25, 0);
+            rightShoe.castShadow = true;
+            group.add(rightShoe);
+            
+            // Носок левого ботинка (красный шарик)
+            const leftToeGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+            const leftToeMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            const leftToe = new THREE.Mesh(leftToeGeometry, leftToeMaterial);
+            leftToe.position.set(-0.5, 0.3, 0.8);
+            leftToe.castShadow = true;
+            group.add(leftToe);
+            
+            // Носок правого ботинка
+            const rightToeGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+            const rightToeMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            const rightToe = new THREE.Mesh(rightToeGeometry, rightToeMaterial);
+            rightToe.position.set(0.5, 0.3, 0.8);
+            rightToe.castShadow = true;
+            group.add(rightToe);
+            
+            // Шнурки
+            const laceGeometry = new THREE.BoxGeometry(1.2, 0.1, 0.1);
+            const laceMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            const lace = new THREE.Mesh(laceGeometry, laceMaterial);
+            lace.position.set(0, 0.4, 0);
+            lace.castShadow = true;
+            group.add(lace);
+            
+            return group;
+        }
+
+        // Создание циркового торта
+        function createCircusCake() {
+            const group = new THREE.Group();
+            
+            // Нижний ярус
+            const bottomGeometry = new THREE.CylinderGeometry(1.2, 1.2, 0.5, 8);
+            const bottomMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa88 });
+            const bottom = new THREE.Mesh(bottomGeometry, bottomMaterial);
+            bottom.position.y = 0.25;
+            bottom.castShadow = true;
+            group.add(bottom);
+            
+            // Средний ярус
+            const middleGeometry = new THREE.CylinderGeometry(0.9, 0.9, 0.5, 8);
+            const middleMaterial = new THREE.MeshPhongMaterial({ color: 0xff6688 });
+            const middle = new THREE.Mesh(middleGeometry, middleMaterial);
+            middle.position.y = 0.75;
+            middle.castShadow = true;
+            group.add(middle);
+            
+            // Верхний ярус
+            const topGeometry = new THREE.CylinderGeometry(0.6, 0.6, 0.5, 8);
+            const topMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa44 });
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.position.y = 1.25;
+            top.castShadow = true;
+            group.add(top);
+            
+            // Свечка
+            const candleGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.6, 6);
+            const candleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            const candle = new THREE.Mesh(candleGeometry, candleMaterial);
+            candle.position.set(0, 1.65, 0);
+            candle.castShadow = true;
+            group.add(candle);
+            
+            // Огонек
+            const flameGeometry = new THREE.ConeGeometry(0.15, 0.3, 6);
+            const flameMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa00, emissive: 0x442200 });
+            const flame = new THREE.Mesh(flameGeometry, flameMaterial);
+            flame.position.set(0, 2.0, 0);
+            flame.castShadow = true;
+            group.add(flame);
+            
+            return group;
+        }
+
+        // Создание фокусника
+        function createMagician() {
+            const group = new THREE.Group();
+            
+            // Шляпа
+            const hatBottomGeometry = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 8);
+            const hatBottomMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const hatBottom = new THREE.Mesh(hatBottomGeometry, hatBottomMaterial);
+            hatBottom.position.y = 1.8;
+            hatBottom.castShadow = true;
+            group.add(hatBottom);
+            
+            const hatTopGeometry = new THREE.ConeGeometry(0.5, 0.8, 8);
+            const hatTopMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const hatTop = new THREE.Mesh(hatTopGeometry, hatTopMaterial);
+            hatTop.position.y = 2.3;
+            hatTop.castShadow = true;
+            group.add(hatTop);
+            
+            // Голова
+            const headGeometry = new THREE.SphereGeometry(0.4, 8, 8);
+            const headMaterial = new THREE.MeshPhongMaterial({ color: 0xffddbb });
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = 1.4;
+            head.castShadow = true;
+            group.add(head);
+            
+            // Глаза
+            const eyeGeometry = new THREE.SphereGeometry(0.1, 6, 6);
+            const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            leftEye.position.set(-0.15, 1.45, 0.35);
+            leftEye.castShadow = true;
+            group.add(leftEye);
+            
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            rightEye.position.set(0.15, 1.45, 0.35);
+            rightEye.castShadow = true;
+            group.add(rightEye);
+            
+            // Усы
+            const mustacheGeometry = new THREE.TorusGeometry(0.2, 0.05, 4, 8, Math.PI);
+            const mustacheMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const mustache = new THREE.Mesh(mustacheGeometry, mustacheMaterial);
+            mustache.position.set(0, 1.35, 0.4);
+            mustache.rotation.x = Math.PI / 2;
+            mustache.rotation.z = Math.PI / 2;
+            mustache.scale.set(0.5, 0.5, 0.5);
+            group.add(mustache);
+            
+            // Тело (плащ)
+            const bodyGeometry = new THREE.CylinderGeometry(0.7, 0.8, 1.2, 8);
+            const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x2244aa });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.6;
+            body.castShadow = true;
+            group.add(body);
+            
+            // Волшебная палочка
+            const wandGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.8, 6);
+            const wandMaterial = new THREE.MeshPhongMaterial({ color: 0xffdd44 });
+            const wand = new THREE.Mesh(wandGeometry, wandMaterial);
+            wand.position.set(0.8, 1.0, 0.5);
+            wand.rotation.z = 0.3;
+            wand.castShadow = true;
+            group.add(wand);
+            
+            return group;
+        }
+
+        // Создание цирковых шаров
+        function createCircusBalls() {
+            const group = new THREE.Group();
+            
+            const colors = [0xff3333, 0x33ff33, 0x3333ff, 0xffff33, 0xff33ff];
+            const positions = [
+                { x: -0.5, y: 0.8, z: -0.3 },
+                { x: 0.5, y: 1.0, z: 0 },
+                { x: 0, y: 1.2, z: 0.4 },
+                { x: -0.4, y: 1.4, z: -0.2 },
+                { x: 0.4, y: 1.6, z: 0.1 }
+            ];
+            
+            for (let i = 0; i < 5; i++) {
+                const ballGeometry = new THREE.SphereGeometry(0.4, 12, 12);
+                const ballMaterial = new THREE.MeshPhongMaterial({ 
+                    color: colors[i % colors.length],
+                    shininess: 80
+                });
+                const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+                ball.position.set(positions[i].x, positions[i].y, positions[i].z);
+                ball.castShadow = true;
+                group.add(ball);
+            }
+            
+            return group;
+        }
+
+        // НОВАЯ ФУНКЦИЯ: Создание клоуна, который стоит на ногах
+        function createStandingClown() {
+            const group = new THREE.Group();
+            
+            // Ноги
+            const legGeometry = new THREE.CylinderGeometry(0.3, 0.4, 1.0, 6);
+            const legMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa44 });
+            
+            const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+            leftLeg.position.set(-0.4, 0.5, 0);
+            leftLeg.castShadow = true;
+            group.add(leftLeg);
+            
+            const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+            rightLeg.position.set(0.4, 0.5, 0);
+            rightLeg.castShadow = true;
+            group.add(rightLeg);
+            
+            // Ботинки
+            const shoeGeometry = new THREE.BoxGeometry(0.5, 0.3, 0.8);
+            const shoeMaterial = new THREE.MeshPhongMaterial({ color: 0x884422 });
+            
+            const leftShoe = new THREE.Mesh(shoeGeometry, shoeMaterial);
+            leftShoe.position.set(-0.4, 0.15, 0.2);
+            leftShoe.castShadow = true;
+            group.add(leftShoe);
+            
+            const rightShoe = new THREE.Mesh(shoeGeometry, shoeMaterial);
+            rightShoe.position.set(0.4, 0.15, 0.2);
+            rightShoe.castShadow = true;
+            group.add(rightShoe);
+            
+            // Штаны
+            const pantsGeometry = new THREE.CylinderGeometry(0.7, 0.8, 1.0, 6);
+            const pantsMaterial = new THREE.MeshPhongMaterial({ color: 0x3366ff });
+            const pants = new THREE.Mesh(pantsGeometry, pantsMaterial);
+            pants.position.set(0, 1.0, 0);
+            pants.castShadow = true;
+            group.add(pants);
+            
+            // Тело
+            const bodyGeometry = new THREE.CylinderGeometry(0.8, 0.8, 1.2, 6);
+            const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xff6666 });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.set(0, 1.8, 0);
+            body.castShadow = true;
+            group.add(body);
+            
+            // Голова
+            const headGeometry = new THREE.SphereGeometry(0.5, 8, 8);
+            const headMaterial = new THREE.MeshPhongMaterial({ color: 0xffddbb });
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.set(0, 2.6, 0);
+            head.castShadow = true;
+            group.add(head);
+            
+            // Шляпа
+            const hatBottomGeometry = new THREE.CylinderGeometry(0.6, 0.6, 0.2, 6);
+            const hatBottomMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const hatBottom = new THREE.Mesh(hatBottomGeometry, hatBottomMaterial);
+            hatBottom.position.set(0, 2.95, 0);
+            hatBottom.castShadow = true;
+            group.add(hatBottom);
+            
+            const hatTopGeometry = new THREE.ConeGeometry(0.4, 0.8, 6);
+            const hatTopMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            const hatTop = new THREE.Mesh(hatTopGeometry, hatTopMaterial);
+            hatTop.position.set(0, 3.4, 0);
+            hatTop.castShadow = true;
+            group.add(hatTop);
+            
+            // Глаза
+            const eyeGeometry = new THREE.SphereGeometry(0.15, 6, 6);
+            const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            leftEye.position.set(-0.2, 2.7, 0.4);
+            leftEye.castShadow = true;
+            group.add(leftEye);
+            
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            rightEye.position.set(0.2, 2.7, 0.4);
+            rightEye.castShadow = true;
+            group.add(rightEye);
+            
+            // Зрачки
+            const pupilGeometry = new THREE.SphereGeometry(0.08, 6, 6);
+            const pupilMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+            
+            const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+            leftPupil.position.set(-0.25, 2.7, 0.5);
+            leftPupil.castShadow = true;
+            group.add(leftPupil);
+            
+            const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+            rightPupil.position.set(0.15, 2.7, 0.5);
+            rightPupil.castShadow = true;
+            group.add(rightPupil);
+            
+            // Красный нос
+            const noseGeometry = new THREE.SphereGeometry(0.15, 6, 6);
+            const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+            nose.position.set(0, 2.65, 0.55);
+            nose.castShadow = true;
+            group.add(nose);
+            
+            // Рот
+            const mouthGeometry = new THREE.TorusGeometry(0.2, 0.05, 4, 8, Math.PI);
+            const mouthMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+            mouth.position.set(0, 2.5, 0.5);
+            mouth.rotation.x = Math.PI / 2;
+            mouth.rotation.z = Math.PI;
+            mouth.scale.set(0.7, 0.7, 0.7);
+            group.add(mouth);
+            
+            // Руки
+            const armGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1.2, 6);
+            const armMaterial = new THREE.MeshPhongMaterial({ color: 0xffaa44 });
+            
+            const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+            leftArm.position.set(-0.9, 2.0, 0);
+            leftArm.rotation.z = 0.3;
+            leftArm.castShadow = true;
+            group.add(leftArm);
+            
+            const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+            rightArm.position.set(0.9, 2.0, 0);
+            rightArm.rotation.z = -0.3;
+            rightArm.castShadow = true;
+            group.add(rightArm);
+            
+            // Кисти
+            const handGeometry = new THREE.SphereGeometry(0.2, 6, 6);
+            const handMaterial = new THREE.MeshPhongMaterial({ color: 0xffddbb });
+            
+            const leftHand = new THREE.Mesh(handGeometry, handMaterial);
+            leftHand.position.set(-1.3, 1.8, 0);
+            leftHand.castShadow = true;
+            group.add(leftHand);
+            
+            const rightHand = new THREE.Mesh(handGeometry, handMaterial);
+            rightHand.position.set(1.3, 1.8, 0);
+            rightHand.castShadow = true;
+            group.add(rightHand);
+            
+            // Пуговицы
+            const buttonGeometry = new THREE.SphereGeometry(0.1, 4, 4);
+            const buttonMaterial = new THREE.MeshPhongMaterial({ color: 0xffdd00 });
+            
+            const button1 = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            button1.position.set(0, 1.5, 0.6);
+            button1.castShadow = true;
+            group.add(button1);
+            
+            const button2 = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            button2.position.set(0, 1.2, 0.6);
+            button2.castShadow = true;
+            group.add(button2);
+            
+            const button3 = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            button3.position.set(0, 0.9, 0.6);
+            button3.castShadow = true;
+            group.add(button3);
+            
+            return group;
+        }
+
+        // Создание монеты
+        function createCoin() {
+            const lane = Math.floor(Math.random() * 3);
+            
+            const coinGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.1, 12);
+            const coinMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xFFD700,
+                emissive: isNight ? 0x443300 : 0x222200,
+                shininess: 80
+            });
+            const coin = new THREE.Mesh(coinGeometry, coinMaterial);
+            
+            coin.position.set(lanes[lane], 1.5, -40);
+            coin.rotation.x = Math.PI / 2;
+            coin.castShadow = true;
+            coin.userData = { type: 'coin', lane, value: 10 };
+            
+            scene.add(coin);
+            coins.push(coin);
+            
+            const innerGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.11, 8);
+            const innerMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xFFA500,
+                emissive: isNight ? 0x331100 : 0x442200
+            });
+            const inner = new THREE.Mesh(innerGeometry, innerMaterial);
+            inner.rotation.x = Math.PI / 2;
+            coin.add(inner);
+        }
+
+        // Обновление игрока
+        function updatePlayer(deltaTime) {
+            let moved = false;
+            
+            if (touchControls.left && playerLane > 0) {
+                playerLane--;
+                touchControls.left = false;
+                moved = true;
+            }
+            if (touchControls.right && playerLane < 2) {
+                playerLane++;
+                touchControls.right = false;
+                moved = true;
+            }
+            
+            if (moved) {
+                // Воспроизводим звук поворота
+                playTurnSound();
+            }
+            
+            if ((touchControls.jump || touchControls.up) && !isJumping) {
+                isJumping = true;
+                jumpStartTime = Date.now();
+                touchControls.jump = false;
+                touchControls.up = false;
+                
+                // Воспроизводим звук прыжка
+                playJumpSound();
+            }
+            
+            playerTargetX = lanes[playerLane];
+            player.position.x += (playerTargetX - player.position.x) * 0.15 * currentSpeed;
+
+            if (isJumping) {
+                const jumpProgress = (Date.now() - jumpStartTime) / 500;
+                if (jumpProgress < 1) {
+                    playerY = playerOriginalHeight/2 + Math.sin(jumpProgress * Math.PI) * jumpHeight;
+                } else {
+                    isJumping = false;
+                    playerY = playerOriginalHeight/2;
+                }
+                player.position.y = playerY;
+            }
+
+            camera.position.x = player.position.x;
+            camera.position.y = player.position.y + 0.8;
+            camera.position.z = player.position.z + 1.2;
+            camera.lookAt(player.position.x, player.position.y, player.position.z - 8);
+            
+            // Обновляем позицию фонарика
+            updateFlashlight();
+        }
+
+        // Обновление охранника
+        function updateGuard(deltaTime) {
+            guard.position.z += currentSpeed * deltaTime * 60;
+            
+            const runCycle = Date.now() * 0.01;
+            guard.position.y = 1 + Math.sin(runCycle) * 0.05;
+            
+            const radio = guard.children.find(child => child.geometry && child.geometry.type === "BoxGeometry");
+            if (radio) {
+                radio.rotation.z = -0.3 + Math.sin(runCycle) * 0.1;
+            }
+            
+            if (guard.position.z > 20) {
+                guard.position.z = -60;
+            }
+            
+            if (checkCollision(player, guard)) {
+                gameOver();
+            }
+        }
+
+        // Обновление движущегося окружения
+        function updateEnvironment(deltaTime) {
+            const moveSpeed = currentSpeed * deltaTime * 30;
+            
+            for (let i = environmentObjects.length - 1; i >= 0; i--) {
+                const obj = environmentObjects[i];
+                
+                obj.position.z += moveSpeed;
+                
+                if (obj.position.z > 100) {
+                    obj.position.z -= 300;
+                    
+                    if (obj.userData.type === 'cloud') {
+                        obj.position.x = Math.random() * 80 - 40;
+                        obj.position.y = 15 + Math.random() * 10;
+                    }
+                    
+                    if (obj.userData.type === 'tree' || obj.userData.type === 'lamp') {
+                        if (obj.userData.side === 'left') {
+                            obj.position.x = -10 + Math.random() * 5 - 2.5;
+                        } else {
+                            obj.position.x = 10 + Math.random() * 5 - 2.5;
+                        }
+                    }
+                    
+                    if (obj.userData.type === 'circus') {
+                        if (obj.userData.side === 'left') {
+                            obj.position.x = -25 + Math.random() * 10 - 5;
+                        } else {
+                            obj.position.x = 25 + Math.random() * 10 - 5;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Обновление скорости
+        function updateSpeed() {
+            if (distance > 0 && distance % 100 < 1) {
+                speedMultiplier = 1 + Math.floor(distance / 100) * 0.2;
+                currentSpeed = baseSpeed * speedMultiplier;
+                
+                if (currentSpeed > maxSpeed) {
+                    maxSpeed = currentSpeed;
+                }
+                
+                speedElement.textContent = `Скорость: ${speedMultiplier.toFixed(1)}x`;
+            }
+        }
+
+        // Обновление препятствий и монет
+        function updateObjects(deltaTime) {
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                obstacles[i].position.z += currentSpeed * deltaTime * 60;
+                obstacles[i].rotation.y += 0.01 * currentSpeed;
+                
+                if (checkCollision(player, obstacles[i])) {
+                    // Воспроизводим звук столкновения
+                    playCollisionSound();
+                    gameOver();
+                    return;
+                }
+                
+                if (obstacles[i].position.z > 20) {
+                    scene.remove(obstacles[i]);
+                    obstacles.splice(i, 1);
+                    score += 5 * speedMultiplier;
+                    scoreElement.textContent = `Очки: ${Math.floor(score)}`;
+                }
+            }
+            
+            for (let i = coins.length - 1; i >= 0; i--) {
+                coins[i].position.z += currentSpeed * deltaTime * 60;
+                coins[i].rotation.y += 0.05 * currentSpeed;
+                coins[i].position.y = 1.5 + Math.sin(Date.now() * 0.005) * 0.3;
+                
+                if (checkCollision(player, coins[i])) {
+                    score += 10 * speedMultiplier;
+                    scoreElement.textContent = `Очки: ${Math.floor(score)}`;
+                    scene.remove(coins[i]);
+                    coins.splice(i, 1);
+                    
+                    // Воспроизводим звук сбора монеты
+                    playCoinSound();
+                    continue;
+                }
+                
+                if (coins[i].position.z > 20) {
+                    scene.remove(coins[i]);
+                    coins.splice(i, 1);
+                }
+            }
+            
+            const currentTime = Date.now();
+            if (currentTime - lastObstacleTime > obstacleInterval / speedMultiplier) {
+                createObstacle();
+                lastObstacleTime = currentTime;
+                obstacleInterval = Math.max(800, obstacleInterval - 5);
+            }
+            
+            if (currentTime - lastCoinTime > coinInterval / speedMultiplier) {
+                createCoin();
+                lastCoinTime = currentTime;
+            }
+        }
+
+        // Проверка столкновений
+        function checkCollision(obj1, obj2) {
+            const box1 = new THREE.Box3().setFromObject(obj1);
+            const box2 = new THREE.Box3().setFromObject(obj2);
+            return box1.intersectsBox(box2);
+        }
+
+        // Игровой цикл
+        function gameLoop() {
+            if (!gameRunning || gamePaused) return;
+            
+            const deltaTime = 0.016;
+            
+            updatePlayer(deltaTime);
+            updateGuard(deltaTime);
+            updateRoadLines(deltaTime);
+            updateEnvironment(deltaTime);
+            updateSnowParticles(deltaTime);
+            updateStars(deltaTime);
+            updateSpeed();
+            updateObjects(deltaTime);
+            
+            distance += currentSpeed * deltaTime * 20;
+            distanceElement.textContent = `Дистанция: ${Math.floor(distance)}м`;
+            
+            // Автоматическая смена погоды
+            autoChangeWeather();
+            
+            renderer.render(scene, camera);
+            
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Сенсорное управление
+        function setupTouchControls() {
+            touchLeft.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchControls.left = true;
+            });
+            
+            touchLeft.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchControls.left = false;
+            });
+            
+            touchRight.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchControls.right = true;
+            });
+            
+            touchRight.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchControls.right = false;
+            });
+            
+            touchJump.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchControls.jump = true;
+            });
+            
+            touchJump.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchControls.jump = false;
+            });
+            
+            touchUp.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchControls.up = true;
+            });
+            
+            touchUp.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchControls.up = false;
+            });
+            
+            [touchLeft, touchRight, touchJump, touchUp].forEach(btn => {
+                btn.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    return false;
+                });
+            });
+        }
+
+        // Клавиатурное управление - ИСПРАВЛЕННАЯ ВЕРСИЯ
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            
+            // Обработка функциональных клавиш
+            if (key === '0') {
+                if (gameRunning) {
+                    togglePause();
+                }
+                e.preventDefault();
+                return;
+            }
+            
+            if (key === 'm') {
+                toggleSound();
+                e.preventDefault();
+                return;
+            }
+            
+            if (key === 'f') {
+                toggleFlashlight();
+                e.preventDefault();
+                return;
+            }
+            
+            if (key === 'escape') {
+                if (gamePaused) {
+                    togglePause();
+                } else if (gameRunning) {
+                    exitToMainMenu();
+                }
+                e.preventDefault();
+                return;
+            }
+            
+            // Полноэкранный режим по F11
+            if (key === 'f11') {
+                toggleFullscreen();
+                e.preventDefault();
+                return;
+            }
+            
+            // Если игра на паузе, не обрабатываем игровые клавиши
+            if (gamePaused) return;
+            
+            // Игровое управление
+            let moved = false;
+            
+            if (key === 'a' && playerLane > 0) {
+                playerLane--;
+                moved = true;
+                e.preventDefault(); // Предотвращаем стандартное поведение
+            }
+            if (key === 'd' && playerLane < 2) {
+                playerLane++;
+                moved = true;
+                e.preventDefault(); // Предотвращаем стандартное поведение
+            }
+            
+            // Воспроизводим звук поворота
+            if (moved) {
+                playTurnSound();
+            }
+            
+            // ПРОБЕЛ - ТОЛЬКО ДЛЯ ПРЫЖКА
+            if (key === ' ' && !isJumping) {
+                isJumping = true;
+                jumpStartTime = Date.now();
+                
+                // Воспроизводим звук прыжка
+                playJumpSound();
+                
+                // ВАЖНО: Предотвращаем стандартное поведение пробела
+                // которое может вызывать выход из полноэкранного режима
+                e.preventDefault();
+                return false;
+            }
+            
+            // Альтернативные клавиши для прыжка
+            if ((key === 'w' || key === 's') && !isJumping) {
+                isJumping = true;
+                jumpStartTime = Date.now();
+                
+                // Воспроизводим звук прыжка
+                playJumpSound();
+                e.preventDefault(); // Предотвращаем стандартное поведение
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            keys[key] = false;
+        });
+
+        // Начало игры
+        function startGame() {
+            gameRunning = true;
+            gamePaused = false;
+            score = 0;
+            distance = 0;
+            currentSpeed = baseSpeed;
+            speedMultiplier = 1;
+            maxSpeed = currentSpeed;
+            playerLane = 1;
+            isJumping = false;
+            obstacleInterval = 1800;
+            coinInterval = 900;
+            lastWeatherChange = Date.now();
+            
+            obstacles.forEach(obstacle => scene.remove(obstacle));
+            coins.forEach(coin => scene.remove(coin));
+            obstacles = [];
+            coins = [];
+            
+            player.position.set(0, playerOriginalHeight/2, 0);
+            player.scale.y = 1;
+            guard.position.set(0, 1, -30);
+            
+            scoreElement.textContent = `Очки: ${Math.floor(score)}`;
+            distanceElement.textContent = `Дистанция: ${Math.floor(distance)}м`;
+            speedElement.textContent = `Скорость: ${speedMultiplier.toFixed(1)}x`;
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            pauseScreen.classList.add('hidden');
+            
+            // Воспроизводим звук начала игры
+            playStartSound();
+            
+            // Автоматически запускаем аудио контекст при начале игры
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            gameLoop();
+        }
+
+        // Конец игры
+        function gameOver() {
+            gameRunning = false;
+            gamePaused = false;
+            cancelAnimationFrame(animationId);
+            
+            finalScoreElement.textContent = `Ваш счет: ${Math.floor(score)}`;
+            finalDistanceElement.textContent = `Дистанция: ${Math.floor(distance)}м`;
+            maxSpeedElement.textContent = `Максимальная скорость: ${speedMultiplier.toFixed(1)}x`;
+            finalSeasonElement.textContent = `Сезон: ${isWinter ? "Зима" : "Лето"}`;
+            finalTimeElement.textContent = `Время суток: ${isNight ? "Ночь" : "День"}`;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        // Инициализация игры
+        function initGame() {
+            initThreeJS();
+            setupTouchControls();
+            createSoundEffects(); // Создаем звуковые эффекты
+            loadingElement.style.display = 'none';
+            
+            // Добавляем обработчики для кнопки звука
+            soundBtn.addEventListener('click', toggleSound);
+            soundBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                toggleSound();
+            });
+            
+            // Добавляем обработчики для кнопки полного экрана
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            fullscreenBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                toggleFullscreen();
+            });
+            
+            // Проверяем поддержку полноэкранного режима
+            if (!isFullscreenSupported()) {
+                fullscreenBtn.style.display = 'none';
+                console.log("Полноэкранный режим не поддерживается");
+            }
+            
+            // Добавляем обработчики для кнопки управления ПК
+            pcControlsBtn.addEventListener('click', showPcControls);
+            closeControlsBtn.addEventListener('click', hidePcControls);
+            
+            // Закрытие модального окна по клику вне его
+            pcControlsModal.addEventListener('click', (e) => {
+                if (e.target === pcControlsModal) {
+                    hidePcControls();
+                }
+            });
+            
+            // Закрытие по клавише Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !pcControlsModal.classList.contains('hidden')) {
+                    hidePcControls();
+                }
+            });
+            
+            startButton.addEventListener('click', startGame);
+            resumeButton.addEventListener('click', togglePause);
+            restartButton.addEventListener('click', startGame);
+            exitBtn.addEventListener('click', exitToMainMenu);
+            
+            startButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startGame();
+            });
+            
+            resumeButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                togglePause();
+            });
+            
+            restartButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startGame();
+            });
+            
+            exitBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                exitToMainMenu();
+            });
+            
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+            
+            document.addEventListener('touchmove', (e) => {
+                if (gameRunning) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Адаптивное отображение кнопок в зависимости от устройства
+            function updateControlsVisibility() {
+                // Переопределяем тип устройства при каждом изменении размера
+                isMobileDevice = detectDeviceType();
+                
+                if (isMobileDevice) {
+                    // На мобильных показываем сенсорное управление
+                    document.querySelector('.touch-controls').style.display = 'flex';
+                    // Скрываем кнопку управления ПК
+                    pcControlsBtn.style.display = 'none';
+                    // Позиционируем кнопку звука правее
+                    soundBtn.style.left = 'auto';
+                    soundBtn.style.right = '110px';
+                    // Позиционируем кнопку полного экрана
+                    fullscreenBtn.style.left = 'auto';
+                    fullscreenBtn.style.right = '60px';
+                    // Показываем кнопку полного экрана если поддерживается
+                    if (isFullscreenSupported()) {
+                        fullscreenBtn.style.display = 'flex';
+                    }
+                } else {
+                    // На ПК показываем кнопку управления
+                    document.querySelector('.touch-controls').style.display = 'none';
+                    pcControlsBtn.style.display = 'flex';
+                    // Позиционируем кнопку звука для ПК
+                    soundBtn.style.left = '200px';
+                    soundBtn.style.right = 'auto';
+                    // Позиционируем кнопку полного экрана для ПК
+                    fullscreenBtn.style.left = '330px';
+                    fullscreenBtn.style.right = 'auto';
+                    // Показываем кнопку полного экрана если поддерживается
+                    if (isFullscreenSupported()) {
+                        fullscreenBtn.style.display = 'flex';
+                    }
+                }
+                
+                // Обновляем отступы безопасной зоны
+                updateSafeAreaInsets();
+            }
+            
+            window.addEventListener('resize', updateControlsVisibility);
+            window.addEventListener('orientationchange', updateControlsVisibility);
+            updateControlsVisibility();
+        }
+
+        window.addEventListener('load', initGame);
+        
+        // Предотвращаем масштабирование на мобильных устройствах
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Предотвращаем стандартное поведение прикосновения
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
